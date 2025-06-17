@@ -1,5 +1,5 @@
 import React from "react";
-import "./techList.css";
+import "./techlist.css";
 import techvideo from "./Mycalculator.mp4";
 import photo from "./profile-logo.webp";
 

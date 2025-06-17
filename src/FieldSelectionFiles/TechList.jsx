@@ -1,5 +1,5 @@
 import React from "react";
-import "./techList.css";
+import "./techlist.css";
 import { Link } from "react-router-dom";
 
 class TechListPage extends React.Component {
