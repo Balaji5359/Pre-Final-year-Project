@@ -10,7 +10,8 @@ function ContactSection() {
             <div className="col-md-8 col-md-offset-2">
                 <h1>Locate Us here</h1>
                 <h4>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur nec nisl odio. Mauris vehicula at nunc id posuere.
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur nec nisl odio. 
+                    Mauris vehicula at nunc id posuere.
                 </h4>
             </div>
             </div>
@@ -24,10 +25,10 @@ function ContactSection() {
                 </span>
                 <br />
                 <span>
-                    <i className="fa fa-phone"></i> Phone: 9398350217
+                    <i className="fa fa-phone"></i> Phone: 9398350212
                 </span>
                 </div>
-            </div>
+            </div><br></br>
             <div className="col-md-7">
                 <br />
                 <div id="social-icon">

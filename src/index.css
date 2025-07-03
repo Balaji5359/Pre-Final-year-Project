@@ -27,7 +27,7 @@ body {
   font-family: 'Poppins', sans-serif;
   line-height: 1.6;
   color: var(--text-color);
-  background: linear-gradient(135deg, #f6f8ff 0%, #e9f0ff 100%);
+  background: linear-gradient(95deg, #b5bdd8 0%, #46417c,#7175e9 100%);
   min-height: 100vh;
 }
 

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import "placement_prediction.css"; // Assuming you have a CSS file for styling
 
 const skills = [
     "FrontEnd Technologies (HTML,CSS,Bootstrap)",

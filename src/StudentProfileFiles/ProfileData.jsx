@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import "./profile_pages.css";
 import "./profile.css";
 
 function ProfileData() {
@@ -92,7 +91,7 @@ function ProfileData() {
             </div>
         );
     }
-
+    console.log(JSON.stringify(userData.data))
     return (
         <div className="profile-container">
             <div className="profile-header">
@@ -106,6 +105,7 @@ function ProfileData() {
                 <h3 className="info-heading">About Me</h3>
                 <div className="info-data"><span>{userData.about || "Not provided"}</span></div>
             </div>
+            <br></br>
             <div className="profile-columns">
                 <div>
                     <div className="profile-section">
@@ -149,33 +149,27 @@ function ProfileData() {
                     </Link>
                 </div>
                 <div>
-                    <h3 className="info-heading">Skills Status</h3>
-                    <Link to="/skills-status">
+                    <h3 className="info-heading">Your Progress</h3>
+                    <Link to="/profiledata">
                         <button type="button" className="btn btn-primary">Click Here To View</button>
                     </Link>
                 </div>
                 <div>
-                    <h3 className="info-heading">Placement Probability</h3>
-                    <Link to="/placement-probability">
+                    <h3 className="info-heading">Your Placement Probability</h3>
                         <button type="button" className="btn btn-primary">Click Here To View</button>
-                    </Link>
-                </div>
-                <div>
-                    <h3 className="info-heading">Progress</h3>
-                    <Link to="/progress">
-                        <button type="button" className="btn btn-primary">Click Here To View</button>
+                    <Link to="/profiledata">
                     </Link>
                 </div>
                 <div>
                     <h3 className="info-heading">Communication Activity</h3>
-                    <Link to="/progress">
+                    <Link to="/activities">
                         <button type="button" className="btn btn-primary">Click Here To View</button>
                     </Link>
                 </div>
                 <div>
-                    <h3 className="info-heading">Skill Activity</h3>
-                    <Link to="/progress">
-                        <button type="button" className="btn btn-primary">Click Here To View</button>
+                    <h3 className="info-heading">Skill Activity with GenAI</h3>
+                    <Link to="/activities2">
+                        <button type="button" className="btn btn-primary">Click Here To Start</button>
                     </Link>
                 </div>
             </div>

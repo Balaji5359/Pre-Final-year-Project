@@ -141,6 +141,7 @@ function PlacementPrediction1() {
             });
             const result = await response.json();
             alert("Ratings submitted successfully!");
+            navigate("/profiledata")
         } catch (error) {
             alert("Submission failed. Please try again.");
             console.error("Error submitting ratings:", error);

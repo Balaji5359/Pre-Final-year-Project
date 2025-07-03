@@ -95,7 +95,7 @@ body {
     background: linear-gradient(90deg, #357abd 60%, #27ae60 100%);
     transform: scale(1.07);
 }
-p{
+.tech-list-header p{
     color: #357abd;
     font-size: 25px;
 }
@@ -343,6 +343,9 @@ video{
     min-height: 100vh;
     padding: 55px;
     margin-top: 100px;
+    position: relative;
+    /* move card to down */
+    top: 100px;
 }
 
 .tech-selection-card h1 {
@@ -632,5 +635,189 @@ video{
     .tech-data .company-list, .tech-data .profiles-list {
         flex-direction: column;
         gap: 1em;
+    }
+}
+/* Existing styles... */
+
+.tech-selection-card {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    color: white;
+}
+
+.tech-selection-summary h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.field-dropdown {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.field-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.field-header:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.field-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.arrow {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.arrow.expanded {
+    transform: rotate(180deg);
+}
+
+.field-content {
+    padding: 0 20px 20px;
+}
+
+.category-dropdown {
+    margin: 15px 0;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.category-header:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.category-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.skills-content {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.skill-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.skill-name {
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.rating-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.stars {
+    display: flex;
+    gap: 2px;
+}
+
+.star {
+    font-size: 1rem;
+    opacity: 0.3;
+    transition: opacity 0.2s ease;
+}
+
+.star.filled {
+    opacity: 1;
+}
+
+.rating-text {
+    font-weight: 600;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .tech-selection-card {
+        margin: 10px;
+        padding: 20px;
+    }
+    
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .field-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .category-header h4 {
+        font-size: 1rem;
     }
 }

@@ -1,11 +1,14 @@
 /* Auth pages specific styles */
+.body{
+  background: linear-gradient(95deg, #b5bdd8 0%, #46417c,#7175e9 100%);
+}
 .auth-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #f6f8ff 0%, #e9f0ff 100%);
+  /* background: linear-gradient(135deg, #f6f8ff 0%, #e9f0ff 100%); */
 }
 
 .container {

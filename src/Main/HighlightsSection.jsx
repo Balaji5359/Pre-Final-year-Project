@@ -1,5 +1,6 @@
 import Navbar from "./Navbar";
 import "./main.css";
+import HighlightImg from "../assets/highlights.png";
 function HighlightsSection() {
     return (
         <>
@@ -22,13 +23,14 @@ function HighlightsSection() {
                 </ul>
                 <button
                     className="register-button"
-                    onClick={() => (window.location.href = "#")}
+                    onClick={() => (window.location.href = "/signup")}
                 >
                     <i className="fas fa-user-plus"></i> Register now and explore our platform
                 </button>
             </div>
             <img
-                src="#"
+                src={HighlightImg}
+                style={{ width: "500px", height: "565px" }}
                 alt="About Skill Route"
                 className="about-image"
             />

@@ -7,6 +7,8 @@ import "./styles/LoadingSpinner.css";
 import Navbar from "./Main/Navbar.jsx";
 import Login_Navbar from "./RegisterFiles/Login_Navbar.jsx";
 import LoadingSpinner from "./components/LoadingSpinner.jsx";
+import Activities from "./GenAI_Folders/Activites.jsx";
+import Activities2 from "./GenAI_Folders/Activities2.jsx";
 
 // Main page components
 const WelcomeSection = lazy(() => import("./Main/WelcomeSection.jsx"));
@@ -17,7 +19,7 @@ const MotivationSection = lazy(() => import("./Main/MotivationSession.jsx"));
 const ResourceSection = lazy(() => import("./Main/ResourceSection.jsx"));
 const ContactSection = lazy(() => import("./Main/ContactSection.jsx"));
 const MapSection = lazy(() => import("./Main/MapSection.jsx"));
-const Services = lazy(() => import("./Main/Services.jsx"));
+// const Services = lazy(() => import("./Main/Services.jsx"));
 
 // Auth components
 const Login = lazy(() => import("./RegisterFiles/Login.jsx"));
@@ -26,18 +28,23 @@ const Signup = lazy(() => import("./RegisterFiles/Signup.jsx"));
 // Profile components
 const ProfileCreation = lazy(() => import("./StudentProfileFiles/ProfileCreation.jsx"));
 const ProfileData = lazy(() => import("./StudentProfileFiles/ProfileData.jsx"));
-
+// const GenAI_Interviewer_Res = lazy(() => import("./GenAI_Folders/GenAI_Interviewer_Res.jsx"));
+// const PollyPlayer = lazy(() => import("./GenAI_Folders/PollyPlayer.jsx"));
 // Field selection components
 const TechList_page = lazy(() => import("./FieldSelectionFiles/TechList.jsx"));
 const Tech = lazy(() => import("./FieldSelectionFiles/Tech.jsx"));
 const Tech_Selection = lazy(() => import("./FieldSelectionFiles/TechSelection.jsx"));
 const PlacementPrediction1 = lazy(() => import("./FieldSelectionFiles/Placement_Prediction1.jsx"));
 const PlacementRatingForm = lazy(() => import("./FieldSelectionFiles/PlacementRatingForm.jsx"));
-
+const GenAIInterviewerRes = lazy(() => import('./GenAI_Folders/GenAI_Interviewer_Res'));
+const GenAI_JAM = lazy(() => import('./GenAI_Folders/GenAI_JAM.jsx'));
+const GenAI_Guidance = lazy(() => import('./GenAI_Folders/GenAI_Guidence.jsx'));
+const GenAI_Prev_Q_Interviewer = lazy(() => import('./GenAI_Folders/GenAI_Prev_Q_Interviewer.jsx'));
+const GenAI_Personality_Test = lazy(() => import('./GenAI_Folders/GenAI_Personality_Test.jsx'));
+const GenAI_Test_Tech = lazy(() => import('./GenAI_Folders/GenAI_Test_Tech.jsx'));
 // Layout components
 const MainLayout = ({ children }) => (
   <>
-    <Navbar />
     <main className="main-content">
       <Suspense fallback={<LoadingSpinner />}>
         {children}
@@ -95,6 +102,7 @@ function App() {
           <Route path="/" element={
             <MainLayout>
               <>
+                <Navbar/>
                 <WelcomeSection />
                 <AboutSection />
                 <HighlightsSection />
@@ -110,24 +118,24 @@ function App() {
           <Route path="/about" element={
             <MainLayout>
               <AboutSection />
+              <MotivationSection />
+              <ResourceSection />
             </MainLayout>
           } />
           
           <Route path="/contact" element={
             <MainLayout>
               <ContactSection />
+              <MapSection />
             </MainLayout>
           } />
           
-          <Route path="/services" element={
-            <MainLayout>
-              <Services />
-            </MainLayout>
-          } />
+          
           
           <Route path="/highlights" element={
             <MainLayout>
               <HighlightsSection />
+              <SelfAssessment />
             </MainLayout>
           } />
 
@@ -146,17 +154,22 @@ function App() {
 
           {/* Protected routes */}
           <Route path="/profilecreation" element={
-            <ProtectedRoute>
-              <DashboardLayout>
-                <ProfileCreation />
-              </DashboardLayout>
-            </ProtectedRoute>
+            <MainLayout>
+              <ProfileCreation />
+            </MainLayout>
           } />
           
           <Route path="/profiledata" element={
             <ProtectedRoute>
               <DashboardLayout>
                 <ProfileData />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/skill-assessment" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <GenAIInterviewerRes/>
               </DashboardLayout>
             </ProtectedRoute>
           } />
@@ -200,12 +213,81 @@ function App() {
               </DashboardLayout>
             </ProtectedRoute>
           } />
+          <Route path="/activities" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Activities />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/activities2" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Activities2 />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/genai-interviewer-res" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <GenAIInterviewerRes />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/genai-jam" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <GenAI_JAM />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/genai-guidance" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <GenAI_Guidance />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+                
+
+          {/* Fallback route for non-existent paths */}
+          <Route path="/not-found" element={
+            <MainLayout>
+              <h1>Page Not Found</h1>
+              <p>The page you are looking for does not exist.</p>
+            </MainLayout>
+          } />
+          <Route path="/genai-prev-q-interviewer" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <GenAI_Prev_Q_Interviewer />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/genai-personality-test" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <GenAI_Personality_Test />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/genai-test-tech" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <GenAI_Test_Tech />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+          
+          {/* Fallback route */}
 
           {/* Catch all route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
     </Router>
+    
   );
 }
 

@@ -96,9 +96,15 @@ function ProfileCreation() {
     };
 
     return (
-        <div className="container">
-            <h1>Student Profile</h1>
-            <form onSubmit={handleSubmit}>
+        <div className="profile-creation-container">
+            <div className="profile-header">
+                <div className="profile-icon">
+                    <i className="fas fa-user-graduate"></i>
+                </div>
+                <h1>Create Your Profile</h1>
+                <p className="profile-subtitle">Complete your profile to get personalized recommendations</p>
+            </div>
+            <form onSubmit={handleSubmit} className="profile-form">
                 {/* Personal Information Section */}
                 <div className="profile-section">
                     <h2 className="section-title">Personal Information</h2>
@@ -366,9 +372,17 @@ function ProfileCreation() {
                         />
                     </div>
                 </div>
-                <button type="submit">Create Profile</button>
-                <div>
-                    <p className="login-link" style={{ color: "green" }}>{message}</p>
+                <div className="form-actions">
+                    <button type="submit" className="submit-btn">
+                        <i className="fas fa-user-plus"></i>
+                        Create Profile
+                    </button>
+                    {message && (
+                        <div className="success-message">
+                            <i className="fas fa-check-circle"></i>
+                            {message}
+                        </div>
+                    )}
                 </div>
             </form>
         </div>

@@ -18,7 +18,7 @@
 
 .placement-prediction-container {
   max-width: 1200px;
-  margin: 40px auto;
+  margin: 120px auto;
   padding: 30px;
   background-color: var(--card-bg);
   border-radius: var(--border-radius);
@@ -272,6 +272,7 @@
 
 .star:hover {
   transform: scale(1.2);
+  color: yellow;
 }
 
 .rating-value {

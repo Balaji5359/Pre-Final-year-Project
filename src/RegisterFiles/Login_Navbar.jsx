@@ -32,19 +32,20 @@ function Login_Navbar() {
     };
 
 
-const goToHome = () => {
+const goToProfile = () => {
     // Reset body styles before navigating to home
     document.body.style = "";
     document.body.className = "";
     // Navigate to home
-    window.location.href = "/";
+    window.location.href = "/profiledata";
 };
+
 
 
     return (
         <nav className="dashboard-navbar">
             <div className="dashboard-container">
-                <div className="dashboard-logo" onClick={goToHome} style={{cursor: 'pointer'}}>
+                <div className="dashboard-logo" style={{cursor: 'pointer'}}>
                     <span className="logo-text">Skill Route</span>
                 </div>
                 
@@ -53,16 +54,20 @@ const goToHome = () => {
                 </div>
                 
                 <div className={`dashboard-nav-links ${menuOpen ? 'active' : ''}`}>
+                    
+
                     <div 
                         className="dashboard-nav-link"
                         onClick={() => {
                             setMenuOpen(false);
-                            goToHome();
+                            goToProfile();
                         }}
                         style={{cursor: 'pointer'}}
                     >
                         <i className="fas fa-home"></i> Home
                     </div>
+
+
                     <Link 
                         to="/tech-list" 
                         className="dashboard-nav-link"

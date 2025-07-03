@@ -1,9 +1,10 @@
 import React from 'react';
 import "./main.css";
+import Motivate from "../assets/motivatee.png";
 function MotivationSection() {
     return (
-        <section className="motivation-section">
-        <div className="motivation-content">
+        <section className="about-section">
+        <div className="about-content">
             <h1>Keep Motivating yourself</h1>
             <ul className="list-style">
             <li>
@@ -20,6 +21,12 @@ function MotivationSection() {
             </li>
             </ul>
         </div>
+        <img
+                src={Motivate}
+                style={{ width: "480px", height: "380px" }}
+                alt="About Skill Route"
+                className="about-image"
+        />
         </section>
     );
 }

@@ -51,6 +51,11 @@ function Tech() {
 
     return (
         <div className="tech-data">
+            <center>
+            <button className="back-button" onClick={() => window.history.back()}>
+                <i className="fas fa-arrow-left"></i> Back
+            </button>
+            </center>
             {apiData ? (
                 <div>
                     <h2>{apiData.field}</h2>

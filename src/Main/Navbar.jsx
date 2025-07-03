@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./main.css";
+import logo from "../assets/logo.png"
 
 function Navbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -37,11 +38,16 @@ function Navbar() {
     };
 
     return (
-        <center>
         <nav className={scrolled ? "scrolled" : ""}>
             <div className="header-div">
+                <img 
+                    src={logo}
+                    style={{ width: "100px", height: "70px" ,borderRadius: "10px", marginRight: "10px" }}
+                    alt="Skill Route Logo"
+                    className="logo-image"
+                />
                 <Link to="/" className="logo">
-                    <span className="logo-text">Skill Route</span>
+                    <h2 style={{padding:"0px",fontWeight:'bold',fontSize:'38px'}}>Skill Route</h2>
                 </Link>
                 
                 <div className="mobile-menu-icon" onClick={toggleMenu}>
@@ -62,13 +68,6 @@ function Navbar() {
                         onClick={() => setMenuOpen(false)}
                     >
                         <i className="fas fa-info-circle"></i> About Us
-                    </Link>
-                    <Link 
-                        to="/services" 
-                        className={`nav-link ${isActive('/services') ? 'active' : ''}`}
-                        onClick={() => setMenuOpen(false)}
-                    >
-                        <i className="fas fa-cogs"></i> Services
                     </Link>
                     <Link 
                         to="/contact" 
@@ -104,7 +103,6 @@ function Navbar() {
                 </div>
             </div>
         </nav>
-        </center>
     );
 }
 

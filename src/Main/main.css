@@ -66,10 +66,8 @@ nav.scrolled {
     padding: 1rem 2.2rem;
     max-width: 1270px;
     margin: 0 auto;
-    position: relative;
-    margin: 0 auto;
-    margin-right: 150px;
-    padding-left: 0.8rem;
+    /* margin-right: 150px; */
+    /* padding-left: 2rem; */
     padding-right: calc(2.2rem + 150px);
     margin-left: 200px;
 }
@@ -678,6 +676,15 @@ font-size: 1.5rem;
 
 .header1:hover {
     color: var(--secondary-color);
+}
+.navbar-container {
+    display: flex;
+    justify-content: center;
+    /* move it full left */
+    margin-left: -1190px;
+    /* fit to page left to right */
+    width: 100%;
+    padding: 0 20px;
 }
 
 /* Responsive Design */
