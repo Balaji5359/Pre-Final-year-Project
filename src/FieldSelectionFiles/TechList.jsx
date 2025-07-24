@@ -185,9 +185,11 @@ function TechListPage() {
                 </div>
                 <div className="tech-list-footer">
                     {!showNote && (
-                        <button onClick={() => setShowNote(true)}>
+                        <center>
+                        <button className="tech-list-button" onClick={() => setShowNote(true)}>
                             Ready for Next Step?
                         </button>
+                        </center>
                     )}
                     {showNote && (
                         <ul id="note">
@@ -197,7 +199,7 @@ function TechListPage() {
                                 in that field.
                             </li>
                             <center>
-                                <Link to="/tech-selection"><button>Click here if you are ready</button></Link>
+                                <Link to="/tech-selection"><button className="tech-list-button">Click here if you are ready</button></Link>
                             </center>
                         </ul>
                     )}

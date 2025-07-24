@@ -43,7 +43,7 @@ const goToProfile = () => {
 
 
     return (
-        <nav className="dashboard-navbar">
+        <nav className="dashboard-navbar1">
             <div className="dashboard-container">
                 <div className="dashboard-logo" style={{cursor: 'pointer'}}>
                     <span className="logo-text">Skill Route</span>
@@ -69,7 +69,7 @@ const goToProfile = () => {
 
 
                     <Link 
-                        to="/tech-list" 
+                        to="/progress" 
                         className="dashboard-nav-link"
                         onClick={() => setMenuOpen(false)}
                     >

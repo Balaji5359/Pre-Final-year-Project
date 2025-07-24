@@ -3,9 +3,12 @@ import "./login.css";
 import { Link, useNavigate } from "react-router-dom";
 
 function SignUp() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [isLogin, setIsLogin] = useState(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: ''
+    });
     const [message, setMessage] = useState("");
     const [statusCode, setStatusCode] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -26,51 +29,97 @@ function SignUp() {
         };
     }, []);
 
+    const handleInputChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
         setApiMessage("");
 
-        const userData = {
-            body: {
-                name: name,
-                email: email,
-                password: password
-            }
-        };
-        
-        const url = 'https://jaumunpkj2.execute-api.ap-south-1.amazonaws.com/dev/signup';
-        const headers = {
-            'Content-Type': 'application/json'
-        };
+        if (isLogin) {
+            // Login API call
+            const url = "https://jaumunpkj2.execute-api.ap-south-1.amazonaws.com/dev/signup/login";
+            const userdata = {
+                email: formData.email,
+                password: formData.password,
+            };
+            const headers = {
+                "Content-Type": "application/json",
+            };
 
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: headers,
-                body: JSON.stringify(userData),
-            });
-            const data = await response.json();
-            setStatusCode(data.statusCode);
-            setMessage(data.body);
-            
             try {
-                const parsedBody = JSON.parse(data.body);
-                setApiMessage(parsedBody.message || "");
-            } catch (e) {
-                setApiMessage(data.body || "");
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: headers,
+                    body: JSON.stringify(userdata),
+                });
+                const data = await response.json();
+                setStatusCode(data.statusCode);
+                setMessage(data.body);
+
+                try {
+                    const parsedBody = JSON.parse(data.body);
+                    setApiMessage(parsedBody.message || "");
+                } catch (e) {
+                    setApiMessage(data.body || "");
+                }
+
+                if (data.statusCode === 200) {
+                    localStorage.setItem("email", formData.email);
+                    navigate("/profiledata");
+                }
+            } catch (error) {
+                setError("Failed to connect to server. Please try again.");
+            } finally {
+                setIsLoading(false);
             }
+        } else {
+            // Signup API call
+            const userData = {
+                body: {
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password
+                }
+            };
             
-            if (data.statusCode === 200) {
-                localStorage.setItem("email", email);
-                navigate("/profilecreation");
+            const url = 'https://jaumunpkj2.execute-api.ap-south-1.amazonaws.com/dev/signup';
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: headers,
+                    body: JSON.stringify(userData),
+                });
+                const data = await response.json();
+                setStatusCode(data.statusCode);
+                setMessage(data.body);
+                
+                try {
+                    const parsedBody = JSON.parse(data.body);
+                    setApiMessage(parsedBody.message || "");
+                } catch (e) {
+                    setApiMessage(data.body || "");
+                }
+                
+                if (data.statusCode === 200) {
+                    localStorage.setItem("email", formData.email);
+                    navigate("/profilecreation");
+                }
+            } catch (error) {
+                setError("Failed to connect to server. Please try again.");
+            } finally {
+                setIsLoading(false);
             }
-        } catch (error) {
-            console.error("Error:", error);
-            setError("Failed to connect to server. Please try again.");
-        } finally {
-            setIsLoading(false);
         }
     };
 
@@ -81,15 +130,28 @@ function SignUp() {
                     <form id="signupForm" onSubmit={handleSubmit}>
                         <div className="form-header">
                             <h1>Welcome to Skill Route</h1>
-                            <h2>Student Signup</h2>
+                            <h2>{isLogin ? 'Student Login' : 'Student Signup'}</h2>
+                            <div className="toggle-buttons">
+                                <button
+                                    className={!isLogin ? 'active' : ''}
+                                    onClick={() => setIsLogin(false)}
+                                    type="button"
+                                >
+                                    Signup
+                                </button>
+                                <button
+                                    className={isLogin ? 'active' : ''}
+                                    onClick={() => setIsLogin(true)}
+                                    type="button"
+                                >
+                                    Login
+                                </button>
+                            </div>
                         </div>
 
                         <div className="social-signup">
                             <button type="button" className="social-btn google">
                                 <i className="fab fa-google"></i> Sign up with Google
-                            </button>
-                            <button type="button" className="social-btn github">
-                                <i className="fab fa-github"></i> Sign up with GitHub
                             </button>
                         </div>
 
@@ -97,18 +159,20 @@ function SignUp() {
                             <span>or</span>
                         </div>
 
-                        <div className="input-field">
-                            <i className="fas fa-user"></i>
-                            <input 
-                                type="text"
-                                name="name"
-                                id="name" 
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="Enter Full Name" 
-                                required
-                            />
-                        </div>
+                        {!isLogin && (
+                            <div className="input-field">
+                                <i className="fas fa-user"></i>
+                                <input 
+                                    type="text"
+                                    name="name"
+                                    id="name" 
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter Full Name" 
+                                    required
+                                />
+                            </div>
+                        )}
 
                         <div className="input-field">
                             <i className="fas fa-envelope"></i>
@@ -116,8 +180,8 @@ function SignUp() {
                                 type="email"
                                 name="email"
                                 id="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={formData.email}
+                                onChange={handleInputChange}
                                 placeholder="Enter Email Address" 
                                 required
                             />
@@ -129,8 +193,8 @@ function SignUp() {
                                 type="password" 
                                 name="password"
                                 id="password" 
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={formData.password}
+                                onChange={handleInputChange}
                                 placeholder="Password" 
                                 required
                             />
@@ -143,7 +207,7 @@ function SignUp() {
                             className="auth-btn signup-btn"
                             disabled={isLoading}
                         >
-                            <span className="btn-text">{isLoading ? 'Creating Account...' : 'Create Account'}</span>
+                            <span className="btn-text">{isLoading ? (isLogin ? 'Logging in...' : 'Creating Account...') : (isLogin ? 'Login' : 'Create Account')}</span>
                             {isLoading && <div className="spinner"></div>}
                         </button></center>
 
@@ -159,9 +223,7 @@ function SignUp() {
                             </div>
                         )}
 
-                        <p className="login-link">
-                            Already have an account? <Link to="/login">Login here</Link>
-                        </p>
+                        <br></br>
                         <center>
                         <div className="btn">
                             <Link to="/">Back to Home</Link>

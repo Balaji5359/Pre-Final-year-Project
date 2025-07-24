@@ -10,6 +10,9 @@ export const speakWithPolly = async (text) => {
         currentAudio = null;
     }
 
+    // Check if text is undefined or null
+    if (!text) return;
+    
     // Clean text for better speech synthesis
     const cleanText = text.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').trim();
     

@@ -2,32 +2,46 @@ import React, { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import "./styles/LoadingSpinner.css";
+import "./modern-styles.css"; // Import modern styles
+import "./Main/common-styles.css"; // Import common styles for sections
 
 // Layout components
 import Navbar from "./Main/Navbar.jsx";
 import Login_Navbar from "./RegisterFiles/Login_Navbar.jsx";
 import LoadingSpinner from "./components/LoadingSpinner.jsx";
+import ScrollToTop from "./components/ScrollToTop.jsx";
 import Activities from "./GenAI_Folders/Activites.jsx";
 import Activities2 from "./GenAI_Folders/Activities2.jsx";
 
 // Main page components
 const WelcomeSection = lazy(() => import("./Main/WelcomeSection.jsx"));
 const AboutSection = lazy(() => import("./Main/AboutSection.jsx"));
+const WebsiteUseRoute = lazy(() => import("./Main/WebsiteUseRoute.jsx"));
 const HighlightsSection = lazy(() => import("./Main/HighlightsSection.jsx"));
 const SelfAssessment = lazy(() => import("./Main/SelfAssessment.jsx"));
 const MotivationSection = lazy(() => import("./Main/MotivationSession.jsx"));
 const ResourceSection = lazy(() => import("./Main/ResourceSection.jsx"));
 const ContactSection = lazy(() => import("./Main/ContactSection.jsx"));
-const MapSection = lazy(() => import("./Main/MapSection.jsx"));
+const MapSection = lazy(() => import("./Main/MapSection.jsx")); // Updated map section with fixed iframe
+const Footer = lazy(() => import("./Main/Footer.jsx"));
 // const Services = lazy(() => import("./Main/Services.jsx"));
 
 // Auth components
-const Login = lazy(() => import("./RegisterFiles/Login.jsx"));
 const Signup = lazy(() => import("./RegisterFiles/Signup.jsx"));
+
 
 // Profile components
 const ProfileCreation = lazy(() => import("./StudentProfileFiles/ProfileCreation.jsx"));
 const ProfileData = lazy(() => import("./StudentProfileFiles/ProfileData.jsx"));
+const Progress = lazy(() => import("./StudentProfileFiles/Progress.jsx"));
+const RoadMap = lazy(() => import("./StudentProfileFiles/RoadMap.jsx"));
+
+//Mentor Profile components
+
+const Mentor = lazy(() => import("./MentorProfilefiles/Mentor.jsx"));
+const MentorProfile = lazy(() => import("./MentorProfilefiles/MentorProfile.jsx"));
+const MentorProfileCreate = lazy(() => import("./MentorProfilefiles/MentorProfileCreate.jsx"));
+
 // const GenAI_Interviewer_Res = lazy(() => import("./GenAI_Folders/GenAI_Interviewer_Res.jsx"));
 // const PollyPlayer = lazy(() => import("./GenAI_Folders/PollyPlayer.jsx"));
 // Field selection components
@@ -37,7 +51,7 @@ const Tech_Selection = lazy(() => import("./FieldSelectionFiles/TechSelection.js
 const PlacementPrediction1 = lazy(() => import("./FieldSelectionFiles/Placement_Prediction1.jsx"));
 const PlacementRatingForm = lazy(() => import("./FieldSelectionFiles/PlacementRatingForm.jsx"));
 const GenAIInterviewerRes = lazy(() => import('./GenAI_Folders/GenAI_Interviewer_Res'));
-const GenAI_JAM = lazy(() => import('./GenAI_Folders/GenAI_JAM.jsx'));
+const GenAI_JAM = lazy(() => import('./GenAI_Folders/GenAI_JAM'));
 const GenAI_Guidance = lazy(() => import('./GenAI_Folders/GenAI_Guidence.jsx'));
 const GenAI_Prev_Q_Interviewer = lazy(() => import('./GenAI_Folders/GenAI_Prev_Q_Interviewer.jsx'));
 const GenAI_Personality_Test = lazy(() => import('./GenAI_Folders/GenAI_Personality_Test.jsx'));
@@ -74,7 +88,7 @@ const DashboardLayout = ({ children }) => (
 // Auth guard - redirects to login if not authenticated
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("email");
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  return isAuthenticated ? children : <Navigate to="/signup" />;
 };
 
 // Reset global styles when navigating between routes
@@ -96,6 +110,7 @@ function App() {
   return (
     <Router>
       <RouteChangeHandler />
+      <ScrollToTop />
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           {/* Public routes */}
@@ -105,12 +120,14 @@ function App() {
                 <Navbar/>
                 <WelcomeSection />
                 <AboutSection />
+                <WebsiteUseRoute />
                 <HighlightsSection />
                 <SelfAssessment />
                 <MotivationSection />
                 <ResourceSection />
                 <ContactSection />
                 <MapSection />
+                <Footer />
               </>
             </MainLayout>
           } />
@@ -120,6 +137,7 @@ function App() {
               <AboutSection />
               <MotivationSection />
               <ResourceSection />
+              <Footer />
             </MainLayout>
           } />
           
@@ -127,6 +145,7 @@ function App() {
             <MainLayout>
               <ContactSection />
               <MapSection />
+              <Footer />
             </MainLayout>
           } />
           
@@ -136,21 +155,36 @@ function App() {
             <MainLayout>
               <HighlightsSection />
               <SelfAssessment />
+              <Footer />
             </MainLayout>
           } />
 
           {/* Auth routes */}
-          <Route path="/login" element={
-            <AuthLayout>
-              <Login />
-            </AuthLayout>
-          } />
+          
           
           <Route path="/signup" element={
             <AuthLayout>
               <Signup />
             </AuthLayout>
           } />
+          
+          <Route path="/mentor" element={
+            <AuthLayout>
+              <Mentor />
+            </AuthLayout>
+          } />
+          
+          <Route path="/mentor_profile" element={
+            <AuthLayout>
+              <MentorProfile/>
+            </AuthLayout>
+          }/>
+
+          <Route path="/mentor_profile_create" element={
+            <AuthLayout>
+              <MentorProfileCreate/>
+            </AuthLayout>
+          }/>
 
           {/* Protected routes */}
           <Route path="/profilecreation" element={
@@ -166,6 +200,25 @@ function App() {
               </DashboardLayout>
             </ProtectedRoute>
           } />
+
+          <Route path="/progress" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Progress />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/roadmap" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <RoadMap />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+
+
+          {/* Field selection routes */}
           <Route path="/skill-assessment" element={
             <ProtectedRoute>
               <DashboardLayout>

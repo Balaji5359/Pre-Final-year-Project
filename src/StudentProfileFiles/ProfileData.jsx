@@ -91,7 +91,7 @@ function ProfileData() {
             </div>
         );
     }
-    console.log(JSON.stringify(userData.data))
+    // console.log(JSON.stringify(userData.data))
     return (
         <div className="profile-container">
             <div className="profile-header">
@@ -149,13 +149,19 @@ function ProfileData() {
                     </Link>
                 </div>
                 <div>
+                    <h3 className="info-heading">Interested Field RoadMap</h3>
+                    <Link to="/roadmap">
+                        <button type="button" className="btn btn-primary">Click Here To Start</button>
+                    </Link>
+                </div>
+                <div>
                     <h3 className="info-heading">Your Progress</h3>
-                    <Link to="/profiledata">
+                    <Link to="/progress">
                         <button type="button" className="btn btn-primary">Click Here To View</button>
                     </Link>
                 </div>
                 <div>
-                    <h3 className="info-heading">Your Placement Probability</h3>
+                    <h3 className="info-heading">Your Activities Feedback</h3>
                         <button type="button" className="btn btn-primary">Click Here To View</button>
                     <Link to="/profiledata">
                     </Link>

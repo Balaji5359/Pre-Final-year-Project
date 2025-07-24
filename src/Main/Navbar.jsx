@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./main.css";
-import logo from "../assets/logo.png"
+import logo from "../assets/logo.png";
 
 function Navbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -37,69 +37,125 @@ function Navbar() {
         return location.pathname === path;
     };
 
+    // Smooth scroll function
+    const scrollToSection = (sectionId) => {
+        setMenuOpen(false);
+        
+        if (location.pathname !== '/') {
+            // If not on home page, navigate to home and then scroll
+            window.location.href = `/#${sectionId}`;
+            return;
+        }
+        
+        const section = document.getElementById(sectionId);
+        if (section) {
+            window.scrollTo({
+                top: section.offsetTop - 80, // Adjust for navbar height
+                behavior: 'smooth'
+            });
+        }
+    };
+
     return (
-        <nav className={scrolled ? "scrolled" : ""}>
+        <nav className={`${scrolled ? "scrolled" : ""}`} style={{ 
+            position: 'fixed',
+            top: 0,
+            width: '100%',
+            zIndex: 1000,
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 2px 15px rgba(0, 0, 0, 0.1)',
+            height: '80px',
+            display: 'flex',
+            alignItems: 'center'
+        }}>
             <div className="header-div">
-                <img 
-                    src={logo}
-                    style={{ width: "100px", height: "70px" ,borderRadius: "10px", marginRight: "10px" }}
-                    alt="Skill Route Logo"
-                    className="logo-image"
-                />
-                <Link to="/" className="logo">
-                    <h2 style={{padding:"0px",fontWeight:'bold',fontSize:'38px'}}>Skill Route</h2>
-                </Link>
-                
-                <div className="mobile-menu-icon" onClick={toggleMenu}>
-                    <i className={`fas ${menuOpen ? 'fa-times' : 'fa-bars'}`}></i>
+                <div className="logo-section">
+                    <img 
+                        src={logo}
+                        style={{ width: "60px", height: "50px", borderRadius: "8px" }}
+                        alt="Skill Route Logo"
+                        className="logo-image"
+                    />
+                    <Link to="/" className="logo">
+                        <h2 className="logo-text">Skill Route</h2>
+                    </Link>
                 </div>
                 
                 <div className={`nav-links ${menuOpen ? 'active' : ''}`}>
-                    <Link 
-                        to="/" 
-                        className={`nav-link ${isActive('/') ? 'active' : ''}`}
-                        onClick={() => setMenuOpen(false)}
+                    <a 
+                        href="#welcome-section"
+                        className="nav-link"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            scrollToSection('welcome-section');
+                        }}
                     >
                         <i className="fas fa-home"></i> Home
-                    </Link>
-                    <Link 
-                        to="/about" 
-                        className={`nav-link ${isActive('/about') ? 'active' : ''}`}
-                        onClick={() => setMenuOpen(false)}
+                    </a>
+                    <a 
+                        href="#about-section"
+                        className="nav-link"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            scrollToSection('about-section');
+                        }}
                     >
                         <i className="fas fa-info-circle"></i> About Us
-                    </Link>
-                    <Link 
-                        to="/contact" 
-                        className={`nav-link ${isActive('/contact') ? 'active' : ''}`}
-                        onClick={() => setMenuOpen(false)}
-                    >
-                        <i className="fas fa-envelope"></i> Contact
-                    </Link>
-                    <Link 
-                        to="/highlights" 
-                        className={`nav-link ${isActive('/highlights') ? 'active' : ''}`}
-                        onClick={() => setMenuOpen(false)}
+                    </a>
+                    <a 
+                        href="#highlights-section"
+                        className="nav-link"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            scrollToSection('highlights-section');
+                        }}
                     >
                         <i className="fas fa-star"></i> Highlights
-                    </Link>
+                    </a>
+                    <a 
+                        href="#contact-sec"
+                        className="nav-link"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            scrollToSection('contact-sec');
+                        }}
+                    >
+                        <i className="fas fa-envelope"></i> Contact
+                    </a>
+                    <a 
+                        href="#map-sec"
+                        className="nav-link"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            scrollToSection('map-sec');
+                        }}
+                    >
+                        <i className="fas fa-map-marker-alt"></i> Location
+                    </a>
                 </div>
                 
-                <div className="auth-buttons">
-                    <Link 
-                        to="/login" 
-                        className="auth-btn login-btn"
-                        onClick={() => setMenuOpen(false)}
-                    >
-                        Login
-                    </Link>
-                    <Link 
-                        to="/signup" 
-                        className="auth-btn signup-btn"
-                        onClick={() => setMenuOpen(false)}
-                    >
-                        Sign Up
-                    </Link>
+                <div className="right-section">
+                    <div className="auth-buttons">
+                        <Link 
+                            to="/signup" 
+                            className="auth-btn signup-btn btn-modern hover-lift"
+                            onClick={() => setMenuOpen(false)}
+                        >
+                            <i className="fas fa-user-graduate icon-pulse"></i> Student
+                        </Link>
+                        <Link 
+                            to="/mentor" 
+                            className="auth-btn mentor-btn btn-modern hover-lift"
+                            onClick={() => setMenuOpen(false)}
+                        >
+                            <i className="fas fa-chalkboard-teacher icon-pulse"></i> Mentor
+                        </Link>
+                    </div>
+                    
+                    <div className="mobile-menu-icon" onClick={toggleMenu}>
+                        <i className={`fas ${menuOpen ? 'fa-times' : 'fa-bars'}`}></i>
+                    </div>
                 </div>
             </div>
         </nav>
