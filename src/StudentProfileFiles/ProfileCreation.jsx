@@ -88,7 +88,7 @@ function ProfileCreation() {
             setStatusCode(response.status)
             if (statusCode === 200){
                 setMessage("Profile Created Successfully")
-                navigate("/login");
+                navigate("/signup");
             }
         } catch (error) {
             console.log(error);
