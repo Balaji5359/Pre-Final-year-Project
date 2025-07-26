@@ -10,6 +10,12 @@ export const speakWithPolly = async (text) => {
         currentAudio = null;
     }
 
+    // Check if text is valid
+    if (!text || typeof text !== 'string') {
+        console.warn('Invalid text provided to speakWithPolly');
+        return;
+    }
+
     // Clean text for better speech synthesis
     const cleanText = text.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').trim();
     

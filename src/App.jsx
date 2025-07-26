@@ -38,6 +38,7 @@ const PlacementPrediction1 = lazy(() => import("./FieldSelectionFiles/Placement_
 const PlacementRatingForm = lazy(() => import("./FieldSelectionFiles/PlacementRatingForm.jsx"));
 const GenAIInterviewerRes = lazy(() => import('./GenAI_Folders/GenAI_Interviewer_Res'));
 const GenAI_JAM = lazy(() => import('./GenAI_Folders/GenAI_JAM.jsx'));
+const GenAI_PronunciationTest = lazy(() => import('./GenAI_Folders/GenAI_PronunciationTest.jsx'));
 const GenAI_Guidance = lazy(() => import('./GenAI_Folders/GenAI_Guidence.jsx'));
 const GenAI_Prev_Q_Interviewer = lazy(() => import('./GenAI_Folders/GenAI_Prev_Q_Interviewer.jsx'));
 const GenAI_Personality_Test = lazy(() => import('./GenAI_Folders/GenAI_Personality_Test.jsx'));
@@ -235,6 +236,7 @@ function App() {
               </DashboardLayout>
             </ProtectedRoute>
           } />
+
           <Route path="/genai-jam" element={
             <ProtectedRoute>
               <DashboardLayout>
@@ -242,6 +244,14 @@ function App() {
               </DashboardLayout>
             </ProtectedRoute>
           } />
+          <Route path="/genai-pronunciation-test" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <GenAI_PronunciationTest />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+          
           <Route path="/genai-guidance" element={
             <ProtectedRoute>
               <DashboardLayout>
