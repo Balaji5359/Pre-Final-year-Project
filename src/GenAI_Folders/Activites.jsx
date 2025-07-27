@@ -9,6 +9,8 @@ function Activities() {
         pronunciation: false,
         listening: false
     });
+    const [subscriptionData, setSubscriptionData] = useState(null);
+    const [daysLeft, setDaysLeft] = useState(0);
 
     useEffect(() => {
         // Load trial usage from localStorage
@@ -20,7 +22,50 @@ function Activities() {
         // Load user plan
         const savedPlan = localStorage.getItem('userPlan') || 'free';
         setUserPlan(savedPlan);
+        
+        // Fetch student data
+        fetchStudentData();
     }, []);
+
+    const fetchStudentData = async () => {
+        try {
+            const email = localStorage.getItem('email');
+            const response = await fetch('https://jaumunpkj2.execute-api.ap-south-1.amazonaws.com/dev/signup/login/profile_data/send_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email })
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                const data = JSON.parse(result.body);
+                
+                if (data.subscription_plan && data.payment_status === 'success') {
+                    setSubscriptionData({
+                        subscription_plan: data.subscription_plan,
+                        payment_status: data.payment_status,
+                        payment_date: data.payment_date,
+                        payment_time: data.payment_time,
+                        payment_id: data.payment_id
+                    });
+                    
+                    // Calculate days left
+                    const paymentDate = new Date(data.payment_date);
+                    const planDuration = data.subscription_plan === '1 month' ? 30 : 90;
+                    const expiryDate = new Date(paymentDate.getTime() + (planDuration * 24 * 60 * 60 * 1000));
+                    const today = new Date();
+                    const daysRemaining = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                    
+                    setDaysLeft(Math.max(0, daysRemaining));
+                    setUserPlan(daysRemaining > 0 ? 'pro' : 'free');
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching student data:', error);
+        }
+    };
 
     const handleActivityClick = (activityType, path) => {
         if (userPlan === 'pro') {
@@ -70,7 +115,7 @@ function Activities() {
                                         isDisabled ? 'text-red-500' : 'text-gray-500'
                                     }`}>
                                         {isTrialAvailable ? '🎯 Free Trial Available' : 
-                                         isDisabled ? '🔒 Trial Used - Upgrade to Pro' : 'Free Trial'}
+                                        isDisabled ? '🔒 Trial Used - Upgrade to Pro' : 'Free Trial'}
                                     </p>
                                 )}
                             </div>
@@ -106,20 +151,55 @@ function Activities() {
                     </p>
                 </div>
 
-                {/* Pro Upgrade Banner */}
-                {userPlan === 'free' && (
+                {/* Subscription Status */}
+                {subscriptionData && userPlan === 'pro' && daysLeft > 0 ? (
+                    <div className="flex justify-center mb-8">
+                        <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl p-4 text-white max-w-md">
+                            <div className="text-center">
+                                <h2 className="text-lg font-bold mb-2">✅ Pro Plan Active</h2>
+                                <p className="text-green-100 text-sm mb-2">
+                                    Plan: {subscriptionData.subscription_plan}
+                                </p>
+                                <p className="text-green-100 text-sm mb-2">
+                                    {daysLeft} days remaining
+                                </p>
+                                <p className="text-green-100 text-xs">
+                                    Payment ID: {subscriptionData.payment_id}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                ) : subscriptionData && daysLeft === 0 ? (
+                    <div className="flex justify-center mb-8">
+                        <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-xl p-4 text-white max-w-md">
+                            <div className="text-center">
+                                <h2 className="text-lg font-bold mb-2">⚠️ Plan Expired</h2>
+                                <p className="text-red-100 text-sm mb-2">
+                                    Your {subscriptionData.subscription_plan} plan has expired
+                                </p>
+                                <button
+                                    onClick={() => navigate('/pro-plans')}
+                                    className="bg-white text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-50 transition-colors text-sm"
+                                >
+                                    Renew Plan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
                     <div className="flex justify-center mb-8">
                         <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-4 text-white max-w-md">
                             <div className="text-center">
                                 <h2 className="text-lg font-bold mb-2">🚀 Upgrade to Pro</h2>
                                 <p className="text-purple-100 text-sm mb-3">
-                                    Unlimited access to all activities
+                                    To have more access to GenAI Sessions
                                 </p>
                                 <button
                                     onClick={() => navigate('/pro-plans')}
                                     className="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-purple-50 transition-colors text-sm"
+                                    style={{marginTop: '8px', cursor: 'pointer'}}
                                 >
-                                    View Plans
+                                    Buy Pro Plan
                                 </button>
                             </div>
                         </div>

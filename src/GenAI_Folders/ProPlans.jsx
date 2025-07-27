@@ -38,11 +38,13 @@ function ProPlans() {
     };
 
     const handlePayment = (planType) => {
-        const planName = planType === 'monthly' ? 'Monthly Plan' : '3 Months Plan';
-        alert(`Redirecting to payment gateway for ${planName}...`);
-        setTimeout(() => {
-            handleUpgrade(planType);
-        }, 1000);
+        const planData = {
+            type: planType,
+            amount: planType === 'monthly' ? 199 : 499,
+            duration: planType === 'monthly' ? '1 month' : '3 months'
+        };
+        localStorage.setItem('selectedPlanData', JSON.stringify(planData));
+        navigate('/pro-plan-payment');
     };
 
     const plans = [

@@ -10,6 +10,7 @@ import ScrollToTop from "./components/ScrollToTop.jsx";
 import Activities from "./GenAI_Folders/Activites.jsx";
 import Activities2 from "./GenAI_Folders/Activities2.jsx";
 import ProPlans from "./GenAI_Folders/ProPlans.jsx";
+import ProPlanPayment from "./GenAI_Folders/ProPlanPayment.jsx";
 
 // Main page components
 const WelcomeSection = lazy(() => import("./Main/WelcomeSection.jsx"));
@@ -283,6 +284,13 @@ function App() {
             <ProtectedRoute>
               <DashboardLayout>
                 <ProPlans />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/pro-plan-payment" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <ProPlanPayment />
               </DashboardLayout>
             </ProtectedRoute>
           } />

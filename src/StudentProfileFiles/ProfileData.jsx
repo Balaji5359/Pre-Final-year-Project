@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./profile.css";
 
 function ProfileData() {
+    const navigate = useNavigate();
     const [apiData, setApi] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [subscriptionData, setSubscriptionData] = useState(null);
+    const [daysLeft, setDaysLeft] = useState(0);
     const [userData, setUserData] = useState({
         Name: "",
         gender: "",
@@ -71,6 +74,26 @@ function ProfileData() {
                             portfolio: parsedData.portfolio || "",
                             resume: parsedData.resume || "",
                         });
+                        
+                        // Check for subscription data
+                        if (parsedData.subscription_plan && parsedData.payment_status === 'success') {
+                            setSubscriptionData({
+                                subscription_plan: parsedData.subscription_plan,
+                                payment_status: parsedData.payment_status,
+                                payment_date: parsedData.payment_date,
+                                payment_time: parsedData.payment_time,
+                                payment_id: parsedData.payment_id
+                            });
+                            
+                            // Calculate days left
+                            const paymentDate = new Date(parsedData.payment_date);
+                            const planDuration = parsedData.subscription_plan === '1 month' ? 30 : 90;
+                            const expiryDate = new Date(paymentDate.getTime() + (planDuration * 24 * 60 * 60 * 1000));
+                            const today = new Date();
+                            const daysRemaining = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                            
+                            setDaysLeft(Math.max(0, daysRemaining));
+                        }
                     } catch (e) {
                         console.error('Error parsing API data body:', e);
                     }
@@ -100,6 +123,40 @@ function ProfileData() {
                 </div>
                 <h2>{userData.Name || "Not provided"}</h2>
                 <span className="profile-role">{userData.program || "Student"}</span>
+                
+                {/* Subscription Status */}
+                {subscriptionData && daysLeft > 0 ? (
+                    <div style={{marginTop: '15px', padding: '10px', backgroundColor: '#10b981', color: 'white', borderRadius: '8px', textAlign: 'center'}}>
+                        <div style={{fontSize: '14px', fontWeight: 'bold'}}>✅ Pro Plan Active</div>
+                        <div style={{fontSize: '12px', marginTop: '5px'}}>Plan: {subscriptionData.subscription_plan}</div>
+                        <div style={{fontSize: '12px'}}>{daysLeft} days remaining</div>
+                        <div style={{fontSize: '10px', marginTop: '5px'}}>Payment ID: {subscriptionData.payment_id}</div>
+                    </div>
+                ) : subscriptionData && daysLeft === 0 ? (
+                    <div style={{marginTop: '15px', padding: '10px', backgroundColor: '#dc2626', color: 'white', borderRadius: '8px', textAlign: 'center'}}>
+                        <div style={{fontSize: '14px', fontWeight: 'bold'}}>⚠️ Plan Expired</div>
+                        <div style={{fontSize: '12px', marginTop: '5px'}}>Your {subscriptionData.subscription_plan} plan has expired</div>
+                        <button 
+                            onClick={() => navigate('/pro-plans')}
+                            className="bg-white text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-50 transition-colors text-sm"
+                            style={{marginTop: '8px', cursor: 'pointer'}}
+                        >
+                            Renew Plan
+                        </button>
+                    </div>
+                ) : (
+                    <div style={{marginTop: '15px', padding: '10px', backgroundColor: '#8b5cf6', color: 'white', borderRadius: '8px', textAlign: 'center'}}>
+                        <div style={{fontSize: '14px', fontWeight: 'bold'}}>🚀 Upgrade to Pro</div>
+                        <div style={{fontSize: '12px', marginTop: '5px'}}>To have more access to GenAI Sessions</div>
+                        <button 
+                            onClick={() => navigate('/pro-plans')}
+                            className="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-purple-50 transition-colors text-sm"
+                            style={{marginTop: '8px', cursor: 'pointer'}}
+                        >
+                            Buy Pro Plan
+                        </button>
+                    </div>
+                )}
             </div>
             <div className="profile-section">
                 <h3 className="info-heading">About Me</h3>
