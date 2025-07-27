@@ -1,9 +1,6 @@
 import React, { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import "./App.css";
-import "./styles/LoadingSpinner.css";
-import "./modern-styles.css"; // Import modern styles
-import "./Main/common-styles.css"; // Import common styles for sections
+// CSS imports removed - styles now in index.css and Tailwind
 
 // Layout components
 import Navbar from "./Main/Navbar.jsx";
@@ -12,6 +9,7 @@ import LoadingSpinner from "./components/LoadingSpinner.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import Activities from "./GenAI_Folders/Activites.jsx";
 import Activities2 from "./GenAI_Folders/Activities2.jsx";
+import ProPlans from "./GenAI_Folders/ProPlans.jsx";
 
 // Main page components
 const WelcomeSection = lazy(() => import("./Main/WelcomeSection.jsx"));
@@ -278,6 +276,13 @@ function App() {
             <ProtectedRoute>
               <DashboardLayout>
                 <Activities2 />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/pro-plans" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <ProPlans />
               </DashboardLayout>
             </ProtectedRoute>
           } />

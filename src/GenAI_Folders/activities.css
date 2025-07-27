@@ -3,6 +3,7 @@
     flex-direction: column;
     gap: 10px;
     /* move 100 px down whole container */
+    top: 50px;
     position: relative;
     top: 100px;
     padding: 30px;

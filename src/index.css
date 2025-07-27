@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Import existing styles */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #4361ee;
+  --secondary-color: #3a0ca3;
+  --accent-color: #4cc9f0;
+  --text-color: #2b2d42;
+  --light-text: #8d99ae;
+  --background-color: #f8f9fa;
+  --card-bg: #ffffff;
+  --success-color: #4ade80;
+  --warning-color: #fbbf24;
+  --danger-color: #f87171;
+  --border-radius: 12px;
+  --box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  --transition: all 0.3s ease;
+}
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
