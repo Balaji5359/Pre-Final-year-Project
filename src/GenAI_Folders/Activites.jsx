@@ -14,8 +14,11 @@ function Activities() {
                 <Link to="/genai-jam" className="activity-item">
                     GenAI Just A Minute topics
                 </Link>
-                <Link to="/genai-personality-test" className="activity-item">
-                    GenAI Personality Test
+                <Link to="/genai-pronunciation-test-spoken" className="activity-item">
+                    GenAI Pronunciation - Spoken Test 
+                </Link>
+                <Link to="/profiledata" className="activity-item">
+                    GenAI Pronunciation - Listening Test 
                 </Link>
             </div>
         </div>
