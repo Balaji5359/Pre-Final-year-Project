@@ -146,15 +146,11 @@ function ProfileData() {
                     </div>
                 ) : (
                     <div style={{marginTop: '15px', padding: '10px', backgroundColor: '#8b5cf6', color: 'white', borderRadius: '8px', textAlign: 'center'}}>
-                        <div style={{fontSize: '14px', fontWeight: 'bold'}}>🚀 Upgrade to Pro</div>
-                        <div style={{fontSize: '12px', marginTop: '5px'}}>To have more access to GenAI Sessions</div>
-                        <button 
-                            onClick={() => navigate('/pro-plans')}
-                            className="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-purple-50 transition-colors text-sm"
-                            style={{marginTop: '8px', cursor: 'pointer'}}
-                        >
-                            Buy Pro Plan
-                        </button>
+                        <div style={{fontSize: '17px', fontWeight: 'bold'}}>🚀 Upgrade to Pro</div>
+                        <div style={{fontSize: '15px', marginTop: '5px'}}>To have more access to GenAI Sessions</div>
+                        <Link to="/pro-plans">
+                            <button type="button" className="btn btn-primary">Buy pro now</button>
+                        </Link>
                     </div>
                 )}
             </div>
@@ -224,15 +220,9 @@ function ProfileData() {
                     </Link>
                 </div>
                 <div>
-                    <h3 className="info-heading">Communication Activity</h3>
+                    <h3 className="info-heading">Gen-AI Agent Activities</h3>
                     <Link to="/activities">
                         <button type="button" className="btn btn-primary">Click Here To View</button>
-                    </Link>
-                </div>
-                <div>
-                    <h3 className="info-heading">Skill Activity with GenAI</h3>
-                    <Link to="/activities2">
-                        <button type="button" className="btn btn-primary">Click Here To Start</button>
                     </Link>
                 </div>
             </div>

@@ -8,10 +8,6 @@ function ProPlanPayment() {
     const [isProcessing, setIsProcessing] = useState(false);
 
     const API_URL = 'https://jaumunpkj2.execute-api.ap-south-1.amazonaws.com/dev/post_field_data';
-    const RAZORPAY_LINKS = {
-        199: 'https://razorpay.me/@ai-skilldevapp?amount=KxK8ikz%2BGFZ8lMDydVeeuA%3D%3D',
-        499: 'https://razorpay.me/@ai-skilldevapp?amount=n%2FUUsdogj%2F7sarE2WD13qg%3D%3D'
-    };
 
     useEffect(() => {
         const storedPlanData = localStorage.getItem('selectedPlanData');
@@ -24,22 +20,33 @@ function ProPlanPayment() {
 
     const handlePayment = () => {
         if (!planData) return;
-        
-        const razorpayLink = RAZORPAY_LINKS[planData.amount];
-        window.open(razorpayLink, '_blank');
-        
-        // Simulate payment completion after a delay
-        setTimeout(() => {
-            handlePaymentSuccess();
-        }, 5000);
+
+        const options = {
+            key: 'YOUR_RAZORPAY_KEY_ID',
+            amount: planData.amount * 100, // in paise
+            currency: 'INR',
+            name: 'AI SkillDev App',
+            description: `Pro Plan - ${planData.type}`,
+            handler: async function (response) {
+                await handlePaymentSuccess(response);
+            },
+            prefill: {
+                email: localStorage.getItem('email') || '',
+            },
+            theme: {
+                color: '#3399cc',
+            },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
     };
 
-    const handlePaymentSuccess = async () => {
+    const handlePaymentSuccess = async (response) => {
         setIsProcessing(true);
-        
         const email = localStorage.getItem('email');
         const currentDate = new Date();
-        
+
         const paymentData = {
             email: email,
             data: {
@@ -49,56 +56,51 @@ function ProPlanPayment() {
                 payment_date: currentDate.toISOString().split('T')[0],
                 payment_time: currentDate.toTimeString().split(' ')[0],
                 plan_type: planData.type,
-                payment_id: `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+                payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
             }
         };
 
         try {
-            const response = await fetch(API_URL, {
+            const result = await fetch(API_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(paymentData)
+                body: JSON.stringify(paymentData),
             });
 
-            if (response.ok) {
+            if (result.ok) {
                 localStorage.setItem('userPlan', 'pro');
                 localStorage.setItem('selectedPlan', planData.type);
                 localStorage.removeItem('selectedPlanData');
                 localStorage.removeItem('trialUsage');
-                
-                alert('Payment successful! Your pro plan is now active.');
+                alert('Payment successful! Your Pro Plan is now active.');
                 navigate('/activities');
             } else {
-                throw new Error('Payment data submission failed');
+                throw new Error('Server error saving payment data');
             }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Payment was successful but there was an error saving your subscription. Please contact support.');
+        } catch (err) {
+            console.error(err);
+            alert('Payment succeeded but failed to save subscription. Please contact support.');
         } finally {
             setIsProcessing(false);
         }
     };
 
-    if (!planData) {
-        return <div>Loading...</div>;
-    }
+    if (!planData) return <div>Loading...</div>;
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 payment-container">
             <div className="payment-wrapper">
-                {/* Header Card */}
+                {/* Header */}
                 <div className="payment-card payment-header">
-                    <h1 className="text-lg font-bold text-gray-800 mb-1">
-                        Congratulations! 
-                    </h1>
-                    <p className="text-gray-500 text-xs">
-                        You're about to upgrade to the Pro Plan
-                    </p>
+                    <h1 className="text-lg font-bold text-gray-800 mb-1">Congratulations!</h1>
+                    <p className="text-gray-500 text-xs">You're about to upgrade to the Pro Plan</p>
                 </div>
 
-                {/* Plan Details Card */}
+                {/* Plan Details */}
                 <div className="payment-plan">
                     <div className="bg-white/20 rounded-full px-2 py-1 inline-block mb-2">
                         <span className="text-xs font-semibold uppercase">
@@ -117,7 +119,7 @@ function ProPlanPayment() {
                     </div>
                 </div>
 
-                {/* Payment Actions Card */}
+                {/* Payment Button */}
                 <div className="payment-card payment-actions">
                     <button
                         onClick={handlePayment}
@@ -125,28 +127,19 @@ function ProPlanPayment() {
                         className="back-to-plans"
                     >
                         {isProcessing ? (
-                            <div className="flex items-center justify-center">
-                                <div className="back-to-plans"></div>
-                                Processing...
-                            </div>
+                            <span>Processing...</span>
                         ) : (
-                            // add styles color
-                            <span 
-                            style={{ color: 'green', cursor: 'pointer' }}>Click here to Pay ₹{planData.amount}
+                            <span style={{ color: 'green', cursor: 'pointer' }}>
+                                Click here to Pay ₹{planData.amount}
                             </span>
-
                         )}
                     </button>
-                    
-                </div>
-                    <button
-                        onClick={() => navigate('/pro-plans')}
-                        className="back-to-plans"
-                    >
+
+                    <button onClick={() => navigate('/pro-plans')} className="back-to-plans">
                         ← Back to Plans
                     </button>
+                </div>
             </div>
-            
         </div>
     );
 }
