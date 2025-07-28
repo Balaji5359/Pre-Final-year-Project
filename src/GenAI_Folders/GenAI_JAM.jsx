@@ -94,7 +94,8 @@ function GenAI_JAM() {
                         "body": JSON.stringify
                         ({
                             message: textMessage,
-                            sessionId: sessionIdget()
+                            sessionId: sessionIdget(),
+                            email: localStorage.getItem('email') || ''
                         })
                     },
                     {
