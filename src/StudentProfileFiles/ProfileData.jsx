@@ -197,13 +197,13 @@ function ProfileData() {
             <div className="profile-actions">
                 <div>
                     <h3 className="info-heading">Interested Field</h3>
-                    <Link to="/tech-list">
+                    <Link to="/profiledata">
                         <button type="button" className="btn btn-primary">Click Here To Select</button>
                     </Link>
                 </div>
                 <div>
                     <h3 className="info-heading">Interested Field RoadMap</h3>
-                    <Link to="/roadmap">
+                    <Link to="/profiledata">
                         <button type="button" className="btn btn-primary">Click Here To Start</button>
                     </Link>
                 </div>
@@ -214,7 +214,7 @@ function ProfileData() {
                     </Link>
                 </div>
                 <div>
-                    <h3 className="info-heading">Your Activities Feedback</h3>
+                    <h3 className="info-heading">Your Activities History</h3>
                         <button type="button" className="btn btn-primary">Click Here To View</button>
                     <Link to="/profiledata">
                     </Link>

@@ -16,14 +16,9 @@ function SignUp() {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    // Add auth-page class to body when component mounts and remove when unmounts
     useEffect(() => {
-        // Reset any existing styles
         document.body.style = "";
-        // Add auth-page class
         document.body.classList.add("auth-page");
-        
-        // Cleanup function to remove class
         return () => {
             document.body.classList.remove("auth-page");
         };
@@ -132,13 +127,7 @@ function SignUp() {
                             <h1>Welcome to Skill Route</h1>
                             <h2>{isLogin ? 'Student Login' : 'Student Signup'}</h2>
                             <div className="toggle-buttons">
-                                <button
-                                    className={!isLogin ? 'active' : ''}
-                                    onClick={() => setIsLogin(false)}
-                                    type="button"
-                                >
-                                    Signup
-                                </button>
+                                {/* Swapped the order of Login and Signup buttons */}
                                 <button
                                     className={isLogin ? 'active' : ''}
                                     onClick={() => setIsLogin(true)}
@@ -146,14 +135,31 @@ function SignUp() {
                                 >
                                     Login
                                 </button>
+                                <button
+                                    className={!isLogin ? 'active' : ''}
+                                    onClick={() => setIsLogin(false)}
+                                    type="button"
+                                >
+                                    Signup
+                                </button>
                             </div>
                         </div>
 
-                        <div className="social-signup">
-                            <button type="button" className="social-btn google">
-                                <i className="fab fa-google"></i> Sign up with Google
-                            </button>
-                        </div>
+                        {/* Removed Google signup/login button */}
+                        {/* Info text for signup and login */}
+                        {!isLogin ? (
+                            <div className="info-text" style={{ marginBottom: "1rem", color: "#333", textAlign: "center" }}>
+                                <div><b>Enter your details below and create one.</b></div>
+                                <div style={{ marginTop: "0.5rem" }}>
+                                    If you have an account, <span style={{ color: "#007bff", cursor: "pointer" }} onClick={() => setIsLogin(true)}>click here to login</span>.
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="info-text" style={{ marginBottom: "1rem", color: "#333", textAlign: "center" }}>
+                                <b>Enter your credentials to login.</b>
+                                <br/>If you don't have an account, <span style={{ color: "#007bff", cursor: "pointer" }} onClick={() => setIsLogin(false)}>click here to signup</span>.
+                            </div>
+                        )}
 
                         <div className="divider">
                             <span>or</span>
@@ -182,7 +188,7 @@ function SignUp() {
                                 id="email"
                                 value={formData.email}
                                 onChange={handleInputChange}
-                                placeholder="Enter Email Address" 
+                                placeholder="Enter you college email" 
                                 required
                             />
                         </div>
