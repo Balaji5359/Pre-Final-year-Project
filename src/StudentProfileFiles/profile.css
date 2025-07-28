@@ -492,3 +492,82 @@
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+/* Account Creation Info */
+.account-info {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+    z-index: 2;
+}
+
+/* Profile Badges */
+.profile-badges {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.student-id-badge {
+    background: rgba(255, 255, 255, 0.9);
+    color: #6a11cb;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(106, 17, 203, 0.3);
+}
+
+.user-type-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.user-type-badge.free-user {
+    background: linear-gradient(45deg, #ff6b6b, #ffa500);
+    color: white;
+    border: 2px solid rgba(255, 107, 107, 0.5);
+    animation: glow-free 2s infinite alternate;
+}
+
+.user-type-badge.pro-user {
+    background: linear-gradient(45deg, #00d4aa, #00b894);
+    color: white;
+    border: 2px solid rgba(0, 212, 170, 0.5);
+    animation: glow-pro 2s infinite alternate;
+}
+
+@keyframes glow-free {
+    from { box-shadow: 0 0 10px rgba(255, 107, 107, 0.5); }
+    to { box-shadow: 0 0 20px rgba(255, 165, 0, 0.8); }
+}
+
+@keyframes glow-pro {
+    from { box-shadow: 0 0 10px rgba(0, 212, 170, 0.5); }
+    to { box-shadow: 0 0 20px rgba(0, 184, 148, 0.8); }
+}
+
+@media (max-width: 600px) {
+    .account-info {
+        position: static;
+        text-align: center;
+        margin-bottom: 15px;
+        font-size: 0.8rem;
+    }
+    
+    .profile-badges {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+}

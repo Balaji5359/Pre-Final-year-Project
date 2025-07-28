@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "./login.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 function SignUp() {
-    const [isLogin, setIsLogin] = useState(false);
+    const location = useLocation();
+    const [isLogin, setIsLogin] = useState(location.state?.showLogin || false);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -19,10 +20,16 @@ function SignUp() {
     useEffect(() => {
         document.body.style = "";
         document.body.classList.add("auth-page");
+        
+        // Set login mode if coming from profile creation
+        if (location.state?.showLogin) {
+            setIsLogin(true);
+        }
+        
         return () => {
             document.body.classList.remove("auth-page");
         };
-    }, []);
+    }, [location.state]);
 
     const handleInputChange = (e) => {
         setFormData({

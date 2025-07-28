@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./profile_pages.css";
 function ProfileCreation() {
@@ -6,6 +6,23 @@ function ProfileCreation() {
     const [statusCode,setStatusCode] = useState(0)
     const [message,setMessage] = useState("")
     const user_email = localStorage.getItem("email");
+    
+    // Ensure consistent CSS styling and cleanup GSAP
+    useEffect(() => {
+        document.body.classList.add("profile-page");
+        
+        // Kill all GSAP animations to prevent errors
+        if (window.gsap) {
+            window.gsap.killTweensOf("*");
+        }
+        if (window.ScrollTrigger) {
+            window.ScrollTrigger.killAll();
+        }
+        
+        return () => {
+            document.body.classList.remove("profile-page");
+        };
+    }, []);
     const [form, setForm] = useState({
         username: "",
         name: "",
@@ -13,8 +30,8 @@ function ProfileCreation() {
         gender: "",
         dob: "",
         age: "",
-        email: "",
-        college_email: "",
+
+        college_email: user_email || "",
         phone: "",
         college: "",
         program: "",
@@ -65,14 +82,14 @@ function ProfileCreation() {
             lastname: form.surname,
             gender: form.gender,
             dob: form.dob,
-            personalemail: user_email || form.email,
-            collegeemail: form.college_email,
+            personalemail: user_email,
+            collegeemail: user_email,
             phone: form.phone,
-            age: form.age,
+            age: form.age.toString(),
             collegename: form.college,
             program: form.program,
             branch: form.branch,
-            year_of_study: form.year,
+            year_of_study: form.year + (form.year === '1' ? 'st' : form.year === '2' ? 'nd' : form.year === '3' ? 'rd' : 'th'),
             state_of_student: form.state,
             city: form.city,
             hobbies: form.hobbies,
@@ -84,14 +101,21 @@ function ProfileCreation() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             });
-            console.log(response)
-            setStatusCode(response.status)
-            if (statusCode === 200){
-                setMessage("Profile Created Successfully")
-                navigate("/signup");
+            const responseStatus = response.status;
+            setStatusCode(responseStatus);
+            
+            if (responseStatus === 200){
+                setMessage("Profile Created Successfully! Please login to continue.");
+                // Wait for message to show, then navigate to login
+                setTimeout(() => {
+                    navigate("/signup", { state: { showLogin: true } });
+                }, 2000);
+            } else {
+                setMessage("Error creating profile. Please try again.");
             }
         } catch (error) {
             console.log(error);
+            setMessage("Network error. Please try again.");
         }
     };
 
@@ -191,19 +215,6 @@ function ProfileCreation() {
                     <h2 className="section-title">Contact Information</h2>
                     <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="email">
-                                Personal Email (Give gmail used while Register)
-                            </label>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                required
-                                value={form.email}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div className="form-group">
                             <label htmlFor="college_email">College Email</label>
                             <input
                                 type="email"
@@ -236,14 +247,18 @@ function ProfileCreation() {
                     <div className="form-row">
                         <div className="form-group">
                             <label htmlFor="college">College Name</label>
-                            <input
-                                type="text"
+                            <select
                                 id="college"
                                 name="college"
                                 required
                                 value={form.college}
                                 onChange={handleChange}
-                            />
+                            >
+                                <option value="" disabled>
+                                    Select College
+                                </option>
+                                <option value="Madanapalle Institute of Technology & Science">Madanapalle Institute of Technology & Science</option>
+                            </select>
                         </div>
                         <div className="form-group">
                             <label htmlFor="program">Program</label>
@@ -273,11 +288,12 @@ function ProfileCreation() {
                                 <option value="" disabled>
                                     Select Branch
                                 </option>
-                                <option value="CSE">Computer Science</option>
-                                <option value="ECE">Electronics</option>
-                                <option value="ME">Mechanical</option>
-                                <option value="CE">Civil</option>
-                                <option value="EE">Electrical</option>
+                                <option value="Computer Science and Engineering">Computer Science and Engineering</option>
+                                <option value="Computer Science and Technology">Computer Science and Technology</option>
+                                <option value="Electronics and Communication Engineering">Electronics and Communication Engineering</option>
+                                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                                <option value="Civil Engineering">Civil Engineering</option>
+                                <option value="Electrical Engineering">Electrical Engineering</option>
                             </select>
                         </div>
                     </div>
@@ -341,6 +357,7 @@ function ProfileCreation() {
                             type="text"
                             id="city"
                             name="city"
+                            placeholder="Enter your city or town"
                             required
                             value={form.city}
                             onChange={handleChange}

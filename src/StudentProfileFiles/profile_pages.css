@@ -31,6 +31,16 @@ body {
     color: var(--text-color);
 }
 
+body.profile-page {
+    background: linear-gradient(135deg, #f6f8ff 0%, #e9f0ff 100%);
+    min-height: 100vh;
+}
+
+body.auth-page {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
 .profile-creation-container {
     /* move top container*/
     margin-top: 500px;

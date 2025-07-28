@@ -13,10 +13,8 @@ function ProfileData() {
         gender: "",
         dob: "",
         age: "",
-        personalEmail: "",
-        collegeEmail: "",
+        email: "",
         phone: "",
-        address: "",
         city: "",
         state: "",
         collegeName: "",
@@ -25,10 +23,11 @@ function ProfileData() {
         yearOfStudy: "",
         hobbies: "",
         about: "",
-        linkedIn: "",
-        github: "",
-        portfolio: "",
-        resume: "",
+        username: "",
+        student_id: "",
+        user_type: "",
+        account_create_date: "",
+        account_create_time: "",
     });
 
     useEffect(() => {
@@ -57,10 +56,8 @@ function ProfileData() {
                             gender: parsedData.gender || "",
                             dob: parsedData.dob || "",
                             age: parsedData.age || "",
-                            personalEmail: parsedData.email || "",
-                            collegeEmail: parsedData.collegeemail || "",
+                            email: parsedData.email || "",
                             phone: parsedData.phone || "",
-                            address: parsedData.address || "",
                             city: parsedData.city || "",
                             state: parsedData.state_of_student || "",
                             collegeName: parsedData.collegename || "",
@@ -69,10 +66,11 @@ function ProfileData() {
                             yearOfStudy: parsedData.year_of_study || "",
                             hobbies: parsedData.hobbies || "",
                             about: parsedData.about || "",
-                            linkedIn: parsedData.linkedIn || "",
-                            github: parsedData.github || "",
-                            portfolio: parsedData.portfolio || "",
-                            resume: parsedData.resume || "",
+                            username: parsedData.username || "",
+                            student_id: parsedData.student_id || "",
+                            user_type: parsedData.user_type || "",
+                            account_create_date: parsedData.account_create_date || "",
+                            account_create_time: parsedData.account_create_time || "",
                         });
                         
                         // Check for subscription data
@@ -117,12 +115,26 @@ function ProfileData() {
     // console.log(JSON.stringify(userData.data))
     return (
         <div className="profile-container">
+            {/* Account Creation Info */}
+            <div className="account-info">
+                <small>Account created: {userData.account_create_date} at {userData.account_create_time}</small>
+                <br />
+                <small>Student-Skill-Route-Id: {userData.student_id || "Not provided"}</small>
+            </div>
+            
             <div className="profile-header">
                 <div className="profile-avatar">
                     <i className="fa-solid fa-user user"></i>
                 </div>
                 <h2>{userData.Name || "Not provided"}</h2>
                 <span className="profile-role">{userData.program || "Student"}</span>
+                
+                {/* User Type */}
+                <div className="profile-badges">
+                    <div className={`user-type-badge ${userData.user_type === 'free' ? 'free-user' : 'pro-user'}`}>
+                        <strong>{userData.user_type?.toUpperCase() || "FREE"} USER</strong>
+                    </div>
+                </div>
                 
                 {/* Subscription Status */}
                 {subscriptionData && daysLeft > 0 ? (
@@ -172,9 +184,9 @@ function ProfileData() {
                     </div>
                     <div className="profile-section">
                         <h3 className="info-heading">Contact Information</h3>
-                        <div className="info-data"><strong>Personal Email:</strong> <span>{userData.personalEmail || "Not provided"}</span></div>
-                        <div className="info-data"><strong>College Email:</strong> <span>{userData.collegeEmail || "Not provided"}</span></div>
+                        <div className="info-data"><strong>College Email:</strong> <span>{userData.email || "Not provided"}</span></div>
                         <div className="info-data"><strong>Phone Number:</strong> <span>{userData.phone || "Not provided"}</span></div>
+                        <div className="info-data"><strong>Username:</strong> <span>{userData.username || "Not provided"}</span></div>
                     </div>
                 </div>
                 <div>
@@ -188,9 +200,6 @@ function ProfileData() {
                     <div className="profile-section">
                         <h3 className="info-heading">Additional Information</h3>
                         <div className="info-data"><strong>Hobbies:</strong> <span>{userData.hobbies || "Not provided"}</span></div>
-                        <div className="info-data"><strong>LinkedIn:</strong> <span>{userData.linkedIn ? <a href={userData.linkedIn} target="_blank" rel="noopener noreferrer">{userData.linkedIn}</a> : "Not provided"}</span></div>
-                        <div className="info-data"><strong>GitHub:</strong> <span>{userData.github ? <a href={userData.github} target="_blank" rel="noopener noreferrer">{userData.github}</a> : "Not provided"}</span></div>
-                        <div className="info-data"><strong>Portfolio:</strong> <span>{userData.portfolio ? <a href={userData.portfolio} target="_blank" rel="noopener noreferrer">{userData.portfolio}</a> : "Not provided"}</span></div>
                     </div>
                 </div>
             </div>
