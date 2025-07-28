@@ -5,14 +5,20 @@ import "./activities.css";
 function Activities() {
     const navigate = useNavigate();
 
-    const ActivityButton = ({ path, title, icon }) => {
+    // Function to handle Start JAM Test button
+    const handleStartJamTest = () => {
+        // Add any logic you want before navigation here
+        navigate("/jam-test-data");
+    };
+
+    const ActivityButton = ({ path, title, icon, startButton }) => {
         return (
-            <div className="relative group">
-                <button
-                    onClick={() => navigate(path)}
-                    className="w-full p-6 rounded-xl border-2 transition-all duration-300 text-left bg-white border-blue-200 hover:border-blue-400 hover:shadow-lg cursor-pointer"
-                >
-                    <div className="flex items-center space-x-4">
+            <div className="relative group w-full p-6 rounded-xl border-2 transition-all duration-300 bg-white border-blue-200 hover:border-blue-400 hover:shadow-lg">
+                <div className="flex items-center justify-between">
+                    <div 
+                        onClick={() => navigate(path)}
+                        className="cursor-pointer flex items-center space-x-4"
+                    >
                         <div className="text-2xl text-blue-600">
                             {icon}
                         </div>
@@ -22,7 +28,15 @@ function Activities() {
                             </h3>
                         </div>
                     </div>
-                </button>
+                    {startButton && (
+                        <button
+                            onClick={handleStartJamTest}
+                            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-black font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-green-700 hover:shadow-xl transform hover:scale-105 transition-all duration-300 border-2 border-green-400"
+                        >
+                            {startButton}
+                        </button>
+                    )}
+                </div>
             </div>
         );
     };
@@ -40,45 +54,52 @@ function Activities() {
                         placement related skills with AI-powered activities
                     </p>
                 </div>
-
-                {/* Activity Boxes */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <h3 className="text-4xl font-bold text-gray-600 mb-4">
+                        Gen-AI Agent Tests
+                </h3>
+                {/* Activity Test Boxes */}
+                <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     <ActivityButton
-                        path="/genai-jam"
-                        title="GenAI JAM Test - Spoken"
+                        path="/activities"
+                        title="JAM Test with GenAI Agent"
                         icon="🎤"
+                        startButton="Start JAM Test"
                     />
+
                     <ActivityButton
-                        path="/genai-pronunciation-test-spoken"
-                        title="Pronunciation Test - Spoken"
+                        path="/activities"
+                        title="Pronunciation Test - Spoken with GenAI Agent"
                         icon="🗣️"
                     />
                     <ActivityButton
-                        path="/profiledata"
-                        title="Pronunciation Test - Listening"
+                        path="/activities"
+                        title="Pronunciation Test - Listening with GenAI Agent"
                         icon="👂"
                     />
+                </div>
+
+                <h3 className="text-4xl font-bold text-gray-600 mb-4">
+                        Pratice with Gen-AI Agent
+                </h3>
+                {/* Activity Practice Boxes */}
+                <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     <ActivityButton
-                        path="/profiledata"
-                        title="Pronunciation Pro Practice"
-                        icon="📚"
-                    />
-                    <ActivityButton
-                        path="/profiledata"
-                        title="Resume-Based Interview"
+                        path="/activities"
+                        title="Practice JAM with GenAI Agent"
                         icon="📄"
                     />
                     <ActivityButton
-                        path="/profiledata"
-                        title="HR Interview"
-                        icon="👔"
+                        path="/activities"
+                        title="Practice Pronunciation - Spoken with GenAI Agent"
+                        icon="📚"
                     />
                     <ActivityButton
-                        path="/profiledata"
-                        title="Technical Interview"
-                        icon="💻"
+                        path="/activities"
+                        title="Practice Pronunciation - Listening with GenAI Agent"
+                        icon="📄"
                     />
                 </div>
+                
 
                 {/* Back Button */}
                 <div className="text-center">
