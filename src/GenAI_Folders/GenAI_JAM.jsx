@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 // import './genai_interviewer_res.css'; // Removed - using Tailwind CSS
 // import { speakWithPolly, stopSpeech } from './PollyPlayer.jsx'; // Disabled due to credential issues
@@ -22,6 +23,9 @@ function GenAI_JAM() {
         const accumulatedTextRef = useRef('');
         const mediaRecorderRef = useRef(null);
         const isRecordingRef = useRef(false);
+        const [testTimer, setTestTimer] = useState(150); // 2 minutes 30 seconds = 150 seconds
+        const [testTimerInterval, setTestTimerInterval] = useState(null);
+        const navigate = useNavigate();
 
 
         const sessionIdget = () => {
@@ -253,12 +257,28 @@ function GenAI_JAM() {
         
         useEffect(() => {
             console.log('Session ID:', sessionId);
+            // Start test timer when component mounts
+            const interval = setInterval(() => {
+                setTestTimer(prev => {
+                    if (prev <= 1) {
+                        clearInterval(interval);
+                        navigate('/jam-test-data');
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            setTestTimerInterval(interval);
+            
             return () => {
                 if (timerInterval) {
                     clearInterval(timerInterval);
                 }
+                if (interval) {
+                    clearInterval(interval);
+                }
             };
-        }, [timerInterval]);
+        }, [timerInterval, navigate]);
     
         const handleKeyDown = (e) => {
             if (e.key === 'Enter') sendMessage();
@@ -274,15 +294,53 @@ function GenAI_JAM() {
         };
         
     
+        const formatTime = (seconds) => {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        };
+
         return (
             <div style={{
                 display: 'flex',
+                flexDirection: 'column',
                 minHeight: '100vh',
-                background: 'linear-gradient(135deg, #e0e7ff 0%, #dbeafe 50%, #e0e7ff 100%)',
-                padding: '40px 16px 16px 16px',
-                gap: '20px',
-                paddingTop: '100px'
+                background: 'linear-gradient(135deg, #e0e7ff 0%, #dbeafe 50%, #e0e7ff 100%)'
             }}>
+                {/* Test Timer at Top */}
+                <div style={{
+                    position: 'fixed',
+                    top: '20px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: 1000,
+                    background: testTimer <= 30 
+                        ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                        : 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                    color: 'white',
+                    padding: '12px 24px',
+                    borderRadius: '20px',
+                    boxShadow: '0 10px 25px rgba(239, 68, 68, 0.4)',
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    animation: testTimer <= 30 ? 'pulse 1s infinite' : 'none',
+                    border: '2px solid rgba(255, 255, 255, 0.3)',
+                    backdropFilter: 'blur(10px)'
+                }}>
+                    <span style={{ fontSize: '20px' }}>⏰</span>
+                    <span>Test Time: {formatTime(testTimer)}</span>
+                    {testTimer <= 30 && <span style={{ fontSize: '16px', animation: 'blink 1s infinite' }}>⚠️</span>}
+                </div>
+                
+                <div style={{
+                    display: 'flex',
+                    minHeight: '100vh',
+                    padding: '80px 16px 16px 16px',
+                    gap: '20px'
+                }}>
                 {/* Instructions Panel - Left Side */}
                 <div style={{
                     width: '500px',
@@ -780,6 +838,7 @@ function GenAI_JAM() {
                             </div>
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
     );

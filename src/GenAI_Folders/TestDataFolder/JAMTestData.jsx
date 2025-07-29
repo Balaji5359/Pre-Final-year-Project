@@ -126,7 +126,7 @@ function JAMTestData() {
                         <h2>🎯 Scheduled Tests</h2>
                         <div className="test-activities">
                             <button 
-                                onClick={() => window.location.href = '/genai-jam'}
+                                onClick={() => window.location.href = '/jam-test-instructions'}
                                 className="test-activity-btn"
                             >
                                 🎤 JAM Session Test - Click here to take test
@@ -157,6 +157,7 @@ function JAMTestData() {
                             <div className="split-layout">
                                 <div className="sessions-sidebar">
                                     <h3>📚 Session History</h3>
+                                    <div className="session-count">Test Count: {sessions.length}</div>
                                     <div className="session-buttons">
                                         {sessions.map((session) => (
                                             <button
@@ -164,8 +165,11 @@ function JAMTestData() {
                                                 className={`session-btn ${selectedHistory?.sessionId === session.sessionId ? 'active' : ''}`}
                                                 onClick={() => setSelectedHistory(selectedHistory?.sessionId === session.sessionId ? null : session)}
                                             >
-                                                <span className="session-id">{session.sessionId}</span>
-                                                <span className="message-count">{Object.keys(session.conversationHistory).length} msgs</span>
+                                                <div className="session-info">
+                                                    <span className="session-time">Session Time: {session.time ? new Date(session.time).toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'}) : 'N/A'}</span>
+                                                    <br />
+                                                    <span className="session-id">JAMSessionId: {session.sessionId}</span>
+                                                </div>
                                             </button>
                                         ))}
                                     </div>
@@ -176,18 +180,35 @@ function JAMTestData() {
                                         <div className="conversation-display">
                                             <h3>💬 {selectedHistory.sessionId}</h3>
                                             <div className="conversation-content">
-                                                {Object.entries(selectedHistory.conversationHistory).map(([user, agent], index) => (
-                                                    <div key={index} className="message-pair">
-                                                        <div className="user-message">
-                                                            <span className="message-label">You:</span>
-                                                            <div className="message-content">{user}</div>
+                                                {Array.isArray(selectedHistory.conversationHistory) ? (
+                                                    // Handle array format: [{user: "msg", agent: "response"}]
+                                                    selectedHistory.conversationHistory.map((item, index) => (
+                                                        <div key={index} className="message-pair">
+                                                            <div className="user-message">
+                                                                <span className="message-label">You:</span>
+                                                                <div className="message-content">{item.user}</div>
+                                                            </div>
+                                                            <div className="agent-message">
+                                                                <span className="message-label">JAM Agent:</span>
+                                                                <div className="message-content">{item.agent}</div>
+                                                            </div>
                                                         </div>
-                                                        <div className="agent-message">
-                                                            <span className="message-label">JAM Agent:</span>
-                                                            <div className="message-content">{agent}</div>
+                                                    ))
+                                                ) : (
+                                                    // Handle object format: {"user_msg": "agent_response"}
+                                                    Object.entries(selectedHistory.conversationHistory).map(([user, agent], index) => (
+                                                        <div key={index} className="message-pair">
+                                                            <div className="user-message">
+                                                                <span className="message-label">You:</span>
+                                                                <div className="message-content">{user}</div>
+                                                            </div>
+                                                            <div className="agent-message">
+                                                                <span className="message-label">JAM Agent:</span>
+                                                                <div className="message-content">{agent}</div>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ))}
+                                                    ))
+                                                )}
                                             </div>
                                         </div>
                                     ) : (
@@ -217,6 +238,7 @@ function JAMTestData() {
                             <div className="split-layout">
                                 <div className="analytics-sidebar">
                                     <h3>📊 Session Analytics</h3>
+                                    <div className="session-count">Test Count: {sessions.length}</div>
                                     <div className="analytics-buttons">
                                         {sessions.map((session) => {
                                             const feedback = extractFeedback(session.conversationHistory);
@@ -226,8 +248,12 @@ function JAMTestData() {
                                                     className={`analytics-btn ${selectedAnalytics?.sessionId === session.sessionId ? 'active' : ''}`}
                                                     onClick={() => setSelectedAnalytics(selectedAnalytics?.sessionId === session.sessionId ? null : {...session, feedback})}
                                                 >
-                                                    <span className="session-id">{session.sessionId}</span>
-                                                    <span className="score-badge">Score: {feedback.score}</span>
+                                                    <div className="session-info">
+                                                        <span className="session-time">Session Time: {session.time ? new Date(session.time).toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'}) : 'N/A'}</span>
+                                                        <br />
+                                                        <span className="session-id">JAMSessionId: {session.sessionId}</span>
+                                                        <span className="score-badge">Score: {feedback.score}</span>
+                                                    </div>
                                                 </button>
                                             ) : null;
                                         })}
@@ -285,16 +311,34 @@ function JAMTestData() {
 }
 
 function extractFeedback(conversationHistory) {
-    for (const [user, agent] of Object.entries(conversationHistory)) {
-        if (user.length > 10 && agent.includes('Overall Rating:')) {
-            const scoreMatch = agent.match(/Overall Rating:\*\*\s*(\d+\/10)/)
-            const feedbackLines = agent.split('\\n').filter(line => line.includes('**') && line.includes(':'))
-            const tipMatch = agent.match(/Tip:\*\*\s*(.+?)(?:\\n|$)/)
-            
-            return {
-                score: scoreMatch ? scoreMatch[1] : 'N/A',
-                details: feedbackLines.map(line => line.replace(/\*\*/g, '').trim()),
-                tip: tipMatch ? tipMatch[1] : null
+    if (Array.isArray(conversationHistory)) {
+        // Handle array format
+        for (const item of conversationHistory) {
+            if (item.user && item.agent && item.user.length > 10 && item.agent.includes('Overall Rating:')) {
+                const scoreMatch = item.agent.match(/Overall Rating:\*\*\s*(\d+\/10)/)
+                const feedbackLines = item.agent.split('\\n').filter(line => line.includes('**') && line.includes(':'))
+                const tipMatch = item.agent.match(/Tip:\*\*\s*(.+?)(?:\\n|$)/)
+                
+                return {
+                    score: scoreMatch ? scoreMatch[1] : 'N/A',
+                    details: feedbackLines.map(line => line.replace(/\*\*/g, '').trim()),
+                    tip: tipMatch ? tipMatch[1] : null
+                }
+            }
+        }
+    } else {
+        // Handle object format
+        for (const [user, agent] of Object.entries(conversationHistory)) {
+            if (user.length > 10 && agent.includes('Overall Rating:')) {
+                const scoreMatch = agent.match(/Overall Rating:\*\*\s*(\d+\/10)/)
+                const feedbackLines = agent.split('\\n').filter(line => line.includes('**') && line.includes(':'))
+                const tipMatch = agent.match(/Tip:\*\*\s*(.+?)(?:\\n|$)/)
+                
+                return {
+                    score: scoreMatch ? scoreMatch[1] : 'N/A',
+                    details: feedbackLines.map(line => line.replace(/\*\*/g, '').trim()),
+                    tip: tipMatch ? tipMatch[1] : null
+                }
             }
         }
     }

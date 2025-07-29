@@ -53,6 +53,7 @@ const GenAIInterviewerRes = lazy(() => import('./GenAI_Folders/GenAI_Interviewer
 const GenAI_PronunciationTestSpoken = lazy(() => import('./GenAI_Folders/GenAI_PronunciationTestSpoken.jsx'));
 const GenAI_JAM = lazy(() => import('./GenAI_Folders/GenAI_JAM'));
 const JAMTestData = lazy(() => import('./GenAI_Folders/TestDataFolder/JAMTestData.jsx'));
+const JAMTestInstructions = lazy(() => import('./GenAI_Folders/TestDataFolder/JAMTestInstructions.jsx'));
 const GenAI_Guidance = lazy(() => import('./GenAI_Folders/GenAI_Guidence.jsx'));
 const GenAI_Prev_Q_Interviewer = lazy(() => import('./GenAI_Folders/GenAI_Prev_Q_Interviewer.jsx'));
 const GenAI_Personality_Test = lazy(() => import('./GenAI_Folders/GenAI_Personality_Test.jsx'));
@@ -314,6 +315,13 @@ function App() {
             <ProtectedRoute>
               <DashboardLayout>
                 <JAMTestData />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/jam-test-instructions" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <JAMTestInstructions />
               </DashboardLayout>
             </ProtectedRoute>
           } />
