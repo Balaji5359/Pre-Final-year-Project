@@ -69,7 +69,7 @@ const goToProfile = () => {
 
 
                     <Link 
-                        to="/progress" 
+                        to="/profiledata" 
                         className="dashboard-nav-link"
                         onClick={() => setMenuOpen(false)}
                     >
@@ -83,7 +83,7 @@ const goToProfile = () => {
                         <i className="fas fa-user"></i> Profile
                     </Link>
                     <Link 
-                        to="/tech-selection" 
+                        to="/profiledata" 
                         className="dashboard-nav-link"
                         onClick={() => setMenuOpen(false)}
                     >
