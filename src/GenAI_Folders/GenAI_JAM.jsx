@@ -154,9 +154,17 @@ function GenAI_JAM() {
             }
         };
     
-        const startRecording = () => {
+        const startRecording = async () => {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 alert('Speech recognition not supported in this browser');
+                return;
+            }
+
+            // Request microphone permission first
+            try {
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+            } catch (error) {
+                alert('Microphone access denied. Please allow microphone access and try again.');
                 return;
             }
     
@@ -168,11 +176,12 @@ function GenAI_JAM() {
             recognition.lang = 'en-US';
     
             recognition.onstart = () => {
+                console.log('Speech recognition started');
                 setIsRecording(true);
                 isRecordingRef.current = true;
                 setAccumulatedText(''); // Clear previous text
                 accumulatedTextRef.current = '';
-                setMessage(''); // Clear message box
+                setMessage('Listening... Start speaking now!'); // Show listening message
                 setIsSubmitting(false); // Reset submission flag
                 startTimer();
             };
@@ -208,10 +217,31 @@ function GenAI_JAM() {
             recognition.onerror = (event) => {
                 console.error('Speech recognition error:', event.error);
                 setIsRecording(false);
+                isRecordingRef.current = false;
+                
+                // Show user-friendly error messages
+                switch(event.error) {
+                    case 'not-allowed':
+                        alert('Microphone access denied. Please allow microphone access in your browser settings.');
+                        break;
+                    case 'no-speech':
+                        console.log('No speech detected, continuing...');
+                        break;
+                    case 'audio-capture':
+                        alert('No microphone found. Please check your microphone connection.');
+                        break;
+                    case 'network':
+                        alert('Network error occurred. Please check your internet connection.');
+                        break;
+                    default:
+                        console.log('Speech recognition error:', event.error);
+                }
             };
     
             recognition.onend = () => {
+                console.log('Speech recognition ended');
                 setIsRecording(false);
+                isRecordingRef.current = false;
                 // Don't auto-submit here, let timer handle it
             };
     
@@ -257,12 +287,28 @@ function GenAI_JAM() {
         
         useEffect(() => {
             console.log('Session ID:', sessionId);
+            
+            // Push a dummy state to prevent back navigation
+            window.history.pushState(null, '', window.location.href);
+            
+            const handlePopState = () => {
+                // Push the state again to prevent going back
+                window.history.pushState(null, '', window.location.href);
+                // Optionally redirect to test data page
+                navigate('/jam-test-data', { replace: true });
+            };
+            
+            window.addEventListener('popstate', handlePopState);
+            
             // Start test timer when component mounts
             const interval = setInterval(() => {
                 setTestTimer(prev => {
                     if (prev <= 1) {
                         clearInterval(interval);
-                        navigate('/jam-test-data');
+                        // Clear the history manipulation and navigate
+                        window.removeEventListener('popstate', handlePopState);
+                        window.history.replaceState(null, '', '/jam-test-data');
+                        navigate('/jam-test-data', { replace: true });
                         return 0;
                     }
                     return prev - 1;
@@ -271,6 +317,7 @@ function GenAI_JAM() {
             setTestTimerInterval(interval);
             
             return () => {
+                window.removeEventListener('popstate', handlePopState);
                 if (timerInterval) {
                     clearInterval(timerInterval);
                 }

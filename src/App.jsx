@@ -306,9 +306,7 @@ function App() {
           } />
           <Route path="/genai-jam" element={
             <ProtectedRoute>
-              <DashboardLayout>
-                <GenAI_JAM />
-              </DashboardLayout>
+              <GenAI_JAM />
             </ProtectedRoute>
           } />
           <Route path="/jam-test-data" element={
