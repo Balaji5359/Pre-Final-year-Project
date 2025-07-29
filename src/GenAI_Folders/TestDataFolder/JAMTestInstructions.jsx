@@ -6,13 +6,18 @@ function JAMTestInstructions() {
     const navigate = useNavigate();
     const [countdown, setCountdown] = useState(null);
 
+    useEffect(() => {
+        if (countdown === 0) {
+            navigate('/genai-jam');
+        }
+    }, [countdown, navigate]);
+
     const startTest = () => {
         setCountdown(10);
         const countdownInterval = setInterval(() => {
             setCountdown(prev => {
                 if (prev <= 1) {
                     clearInterval(countdownInterval);
-                    navigate('/genai-jam');
                     return 0;
                 }
                 return prev - 1;

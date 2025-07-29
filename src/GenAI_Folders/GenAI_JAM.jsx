@@ -286,6 +286,12 @@ function GenAI_JAM() {
         }, [chat]);
         
         useEffect(() => {
+            if (testTimer === 0) {
+                navigate('/jam-test-data', { replace: true });
+            }
+        }, [testTimer, navigate]);
+        
+        useEffect(() => {
             console.log('Session ID:', sessionId);
             
             // Push a dummy state to prevent back navigation
@@ -305,10 +311,6 @@ function GenAI_JAM() {
                 setTestTimer(prev => {
                     if (prev <= 1) {
                         clearInterval(interval);
-                        // Clear the history manipulation and navigate
-                        window.removeEventListener('popstate', handlePopState);
-                        window.history.replaceState(null, '', '/jam-test-data');
-                        navigate('/jam-test-data', { replace: true });
                         return 0;
                     }
                     return prev - 1;

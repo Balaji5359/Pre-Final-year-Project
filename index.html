@@ -13,8 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-    <!-- AOS Animation Library -->
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
   </head>
   <body class="bg-gradient-to-br from-slate-50 to-blue-100 min-h-screen">
     <div id="root"></div>
@@ -22,32 +21,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" 
     integrity="sha512-GWzVrcGlo0TxTRvz9ttioyYJ+Wwk9Ck0G81D+eO63BaqHaJ3YZX9wuqjwgfcV/MrB2PhaVX9DkYVhbFpStnqpQ==" 
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!-- GSAP Animation Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <!-- AOS Animation Library -->
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Initialize AOS animations
-        AOS.init({
-          duration: 800,
-          easing: 'ease-in-out',
-          once: false,
-          mirror: true
-        });
-        
-        // Initialize GSAP ScrollTrigger
-        gsap.registerPlugin(ScrollTrigger);
-        
-        // Add interactive background effects
-        const root = document.getElementById('root');
-        root.addEventListener('mousemove', (e) => {
-          const x = e.clientX / window.innerWidth;
-          const y = e.clientY / window.innerHeight;
-          document.body.style.backgroundPosition = `${x * 100}% ${y * 100}%`;
-        });
-      });
-    </script>
+
   </body>
 </html>
