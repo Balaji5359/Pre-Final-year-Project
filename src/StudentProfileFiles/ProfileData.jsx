@@ -218,7 +218,7 @@ function ProfileData() {
                 </div>
                 <div>
                     <h3 className="info-heading">Your Progress</h3>
-                    <Link to="/progress">
+                    <Link to="/profiledata">
                         <button type="button" className="btn btn-primary">Click Here To View</button>
                     </Link>
                 </div>
