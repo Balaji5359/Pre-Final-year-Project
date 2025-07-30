@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './JAMTestInstructions.css';
-
 function JAMTestInstructions() {
     const navigate = useNavigate();
     const [countdown, setCountdown] = useState(null);
+    const [showReturnMessage, setShowReturnMessage] = useState(false);
 
     useEffect(() => {
         if (countdown === 0) {
-            navigate('/genai-jam');
+            window.open('/genai-jam', '_blank');
+            setShowReturnMessage(true);
         }
     }, [countdown, navigate]);
 
@@ -125,7 +126,18 @@ function JAMTestInstructions() {
                 </div>
 
                 <div className="action-section">
-                    {countdown !== null ? (
+                    {showReturnMessage ? (
+                        <div className="countdown-display">
+                            <div className="countdown-circle" style={{background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'}}>
+                                <span className="countdown-number">✓</span>
+                            </div>
+                            <p className="countdown-text">Test opened in new tab! You can return to this page anytime.</p>
+                            <button className="start-test-btn" onClick={() => navigate(-1)} style={{marginTop: '20px', background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)'}}>
+                                <span className="btn-icon">←</span>
+                                Go Back
+                            </button>
+                        </div>
+                    ) : countdown !== null ? (
                         <div className="countdown-display">
                             <div className="countdown-circle">
                                 <span className="countdown-number">{countdown}</span>

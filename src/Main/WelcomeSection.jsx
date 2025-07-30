@@ -36,23 +36,19 @@ function WelcomeSection() {
             <section id="welcome-section" className="welcome-section animated-bg">
                 <div className="glass p-8 rounded-xl max-w-3xl mx-auto" data-aos="fade-up">
                     <h1 className="welcome">Welcome to Skill Route</h1>
-                    <h2 className="welcome-subtitle mb-8">An Online Skill Testing and Career Path Guidance Platform <b>with AI</b></h2>
-                    <button 
-                        className="welcome-btn btn-modern bg-gradient-cool text-white py-3 px-8 rounded-full hover-lift animated-border"
-                        onClick={() => {
-                            const aboutSection = document.getElementById('about-section');
-                            if (aboutSection) {
-                                aboutSection.scrollIntoView({ behavior: 'smooth' });
-                            }
-                        }}
+                    <h2 className="welcome-subtitle mb-8">An Online Skill Testing and Career Path Guidance Platform <b>with AI Agents</b></h2>
+                    <button
+                        className="register-button btn-modern bg-gradient-primary text-white py-3 px-8 rounded-full hover-lift animated-border"
+                        onClick={() => (window.location.href = "/signup")}
                     >
-                        <span className="relative z-10">Get Started</span>
+                        <i className="fas fa-user-plus icon-pulse"></i> Click Here to get Started
                     </button>
                 </div>
                 
                 <div className="scroll-indicator">
                     <div className="mouse"></div>
-                    <p className="mt-2">Scroll Down</p>
+                    <p className="mt-2">Scroll Down to know more</p>
+                    
                 </div>
             </section>
         </div>

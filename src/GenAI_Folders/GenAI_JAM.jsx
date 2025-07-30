@@ -25,12 +25,33 @@ function GenAI_JAM() {
         const isRecordingRef = useRef(false);
         const [testTimer, setTestTimer] = useState(150); // 2 minutes 30 seconds = 150 seconds
         const [testTimerInterval, setTestTimerInterval] = useState(null);
+        const [showCompletionMessage, setShowCompletionMessage] = useState(false);
         const navigate = useNavigate();
 
 
         const sessionIdget = () => {
             return sessionId;
         }
+
+        useEffect(() => {
+            // Start the test completion timer when component mounts
+            const interval = setInterval(() => {
+                setTestTimer(prev => {
+                    if (prev <= 1) {
+                        clearInterval(interval);
+                        setShowCompletionMessage(true);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            setTestTimerInterval(interval);
+
+            // Cleanup on unmount
+            return () => {
+                if (interval) clearInterval(interval);
+            };
+        }, []);
         
         const startTimer = () => {
             const interval = setInterval(() => {
@@ -181,7 +202,7 @@ function GenAI_JAM() {
                 isRecordingRef.current = true;
                 setAccumulatedText(''); // Clear previous text
                 accumulatedTextRef.current = '';
-                setMessage('Listening... Start speaking now!'); // Show listening message
+                setMessage('🎤 Listening... Start speaking now!'); // Show listening message
                 setIsSubmitting(false); // Reset submission flag
                 startTimer();
             };
@@ -190,8 +211,10 @@ function GenAI_JAM() {
                 let interimTranscript = '';
                 let finalTranscript = '';
                 
-                // Only process new results from the last result index
-                for (let i = event.resultIndex; i < event.results.length; i++) {
+                console.log('Speech recognition result:', event.results);
+                
+                // Process all results
+                for (let i = 0; i < event.results.length; i++) {
                     const transcript = event.results[i][0].transcript;
                     if (event.results[i].isFinal) {
                         finalTranscript += transcript + ' ';
@@ -200,18 +223,18 @@ function GenAI_JAM() {
                     }
                 }
                 
-                // Only add new final transcript to avoid duplicates
+                // Update accumulated text with final results
                 if (finalTranscript.trim()) {
-                    setAccumulatedText(prev => {
-                        const newAccumulated = prev + finalTranscript;
-                        accumulatedTextRef.current = newAccumulated;
-                        setMessage(newAccumulated + interimTranscript);
-                        return newAccumulated;
-                    });
+                    const newAccumulated = accumulatedTextRef.current + finalTranscript;
+                    accumulatedTextRef.current = newAccumulated;
+                    setAccumulatedText(newAccumulated);
+                    setMessage(newAccumulated + interimTranscript);
                 } else if (interimTranscript.trim()) {
-                    // Show interim with current accumulated
+                    // Show interim results with accumulated text
                     setMessage(accumulatedTextRef.current + interimTranscript);
                 }
+                
+                console.log('Current message:', accumulatedTextRef.current + interimTranscript);
             };
     
             recognition.onerror = (event) => {
@@ -286,10 +309,21 @@ function GenAI_JAM() {
         }, [chat]);
         
         useEffect(() => {
-            if (testTimer === 0) {
-                navigate('/jam-test-data', { replace: true });
+            if (testTimer === 0 && !showCompletionMessage) {
+                setShowCompletionMessage(true);
+                // Close the tab after showing message for 5 seconds
+                setTimeout(() => {
+                    // Try multiple methods to close the tab
+                    if (window.opener) {
+                        window.close();
+                    } else {
+                        // For tabs that can't be closed programmatically
+                        window.location.href = 'about:blank';
+                        window.close();
+                    }
+                }, 5000);
             }
-        }, [testTimer, navigate]);
+        }, [testTimer, showCompletionMessage]);
         
         useEffect(() => {
             console.log('Session ID:', sessionId);
@@ -300,34 +334,17 @@ function GenAI_JAM() {
             const handlePopState = () => {
                 // Push the state again to prevent going back
                 window.history.pushState(null, '', window.location.href);
-                // Optionally redirect to test data page
-                navigate('/jam-test-data', { replace: true });
             };
             
             window.addEventListener('popstate', handlePopState);
-            
-            // Start test timer when component mounts
-            const interval = setInterval(() => {
-                setTestTimer(prev => {
-                    if (prev <= 1) {
-                        clearInterval(interval);
-                        return 0;
-                    }
-                    return prev - 1;
-                });
-            }, 1000);
-            setTestTimerInterval(interval);
             
             return () => {
                 window.removeEventListener('popstate', handlePopState);
                 if (timerInterval) {
                     clearInterval(timerInterval);
                 }
-                if (interval) {
-                    clearInterval(interval);
-                }
             };
-        }, [timerInterval, navigate]);
+        }, [timerInterval]);
     
         const handleKeyDown = (e) => {
             if (e.key === 'Enter') sendMessage();
@@ -350,7 +367,7 @@ function GenAI_JAM() {
         };
 
         return (
-            <div style={{
+            <><div style={{
                 display: 'flex',
                 flexDirection: 'column',
                 minHeight: '100vh',
@@ -363,7 +380,7 @@ function GenAI_JAM() {
                     left: '50%',
                     transform: 'translateX(-50%)',
                     zIndex: 1000,
-                    background: testTimer <= 30 
+                    background: testTimer <= 30
                         ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
                         : 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
                     color: 'white',
@@ -383,513 +400,610 @@ function GenAI_JAM() {
                     <span>Test Time: {formatTime(testTimer)}</span>
                     {testTimer <= 30 && <span style={{ fontSize: '16px', animation: 'blink 1s infinite' }}>⚠️</span>}
                 </div>
-                
+
                 <div style={{
                     display: 'flex',
                     minHeight: '100vh',
                     padding: '80px 16px 16px 16px',
                     gap: '20px'
                 }}>
-                {/* Instructions Panel - Left Side */}
-                <div style={{
-                    width: '500px',
-                    flexShrink: 0
-                }}>
+                    {/* Instructions Panel - Left Side */}
                     <div style={{
-                        background: 'rgba(255, 255, 255, 0.9)',
-                        backdropFilter: 'blur(10px)',
-                        borderRadius: '20px',
-                        boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.25)',
-                        border: '1px solid rgba(255, 255, 255, 0.3)',
-                        height: 'calc(100vh - 120px)',
-                        padding: '25px',
-                        overflowY: 'auto'
+                        width: '500px',
+                        flexShrink: 0
                     }}>
                         <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '12px',
-                            marginBottom: '24px'
+                            background: 'rgba(255, 255, 255, 0.9)',
+                            backdropFilter: 'blur(10px)',
+                            borderRadius: '20px',
+                            boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.25)',
+                            border: '1px solid rgba(255, 255, 255, 0.3)',
+                            height: 'calc(100vh - 120px)',
+                            padding: '25px',
+                            overflowY: 'auto'
                         }}>
                             <div style={{
-                                width: '40px',
-                                height: '40px',
-                                background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)',
-                                borderRadius: '16px',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center',
-                                color: 'white',
-                                fontWeight: 'bold',
-                                fontSize: '18px',
-                                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
-                            }}>
-                                📋
-                            </div>
-                            <h3 style={{
-                                fontSize: '30px',
-                                fontWeight: 'bold',
-                                color: '#1f2937',
-                                margin: 0
-                            }}>JAM Session Guide</h3>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                            <div style={{
-                                padding: '16px',
-                                background: 'linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%)',
-                                borderRadius: '12px',
-                                borderLeft: '4px solid #3b82f6',
-                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                transition: 'all 0.3s ease',
-                                cursor: 'pointer'
-                            }}>
-                                <p style={{
-                                    fontSize: '17px',
-                                    color: '#374151',
-                                    fontWeight: '500',
-                                    margin: 0
-                                }}>💬 Start with greeting: <span style={{ fontWeight: 'bold', color: '#2563eb' }}>"hi"</span></p>
-                            </div>
-                            <div style={{
-                                padding: '16px',
-                                background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
-                                borderRadius: '12px',
-                                borderLeft: '4px solid #22c55e',
-                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                transition: 'all 0.3s ease',
-                                cursor: 'pointer'
-                            }}>
-                                <p style={{
-                                    fontSize: '17px',
-                                    color: '#374151',
-                                    fontWeight: '500',
-                                    margin: 0
-                                }}>🎯 Type <span style={{ fontWeight: 'bold', color: '#16a34a' }}>yes</span> then Agent will <span style={{ fontWeight: 'bold', color: '#16a34a' }}>start session</span></p>
-                            </div>
-                            <div style={{
-                                padding: '16px',
-                                background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
-                                borderRadius: '12px',
-                                borderLeft: '4px solid #eab308',
-                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                transition: 'all 0.3s ease',
-                                cursor: 'pointer'
-                            }}>
-                                <p style={{
-                                    fontSize: '17px',
-                                    color: '#374151',
-                                    fontWeight: '500',
-                                    margin: 0
-                                }}>🎯 Choose <span style={{ fontWeight: 'bold', color: '#2563eb' }}>1 topic</span> Agent will provide 2 topics and speak for <span style={{ fontWeight: 'bold', color: '#2563eb' }}>1 minute</span></p>
-                            </div>
-                            <div style={{
-                                padding: '16px',
-                                background: 'linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%)',
-                                borderRadius: '12px',
-                                borderLeft: '4px solid #a855f7',
-                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                transition: 'all 0.3s ease',
-                                cursor: 'pointer'
-                            }}>
-                                <p style={{
-                                    fontSize: '17px',
-                                    color: '#374151',
-                                    fontWeight: '500',
-                                    margin: 0
-                                }}>🎤 Remember the rules, when you click <span style={{ fontWeight: 'bold', color: '#2563eb' }}>Record </span>
-                                it will <span style={{ fontWeight: 'bold', color: 'red' }}>start recording voice</span>, when <span style={{ fontWeight: 'bold', color: '#2563eb' }}>clicked </span>again <span style={{ fontWeight: 'bold', color: 'red' }}>stop recording</span></p>
-                            </div>
-                            <div style={{
-                                padding: '16px',
-                                background: 'linear-gradient(135deg, #fef2f2 0%, #fecaca 100%)',
-                                borderRadius: '12px',
-                                borderLeft: '4px solid #ef4444',
-                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                transition: 'all 0.3s ease',
-                                cursor: 'pointer'
-                            }}>
-                                <p style={{
-                                    fontSize: '17px',
-                                    color: '#374151',
-                                    fontWeight: '500',
-                                    margin: 0
-                                }}>💭 Take time for <span style={{ fontWeight: 'bold', color: '#2563eb' }}>30 sec </span>to think before starting,
-                                you can also use <span style={{ fontWeight: 'bold', color: '#2563eb' }}>1 minute</span> to record your voice
-                                </p>
-                            </div>
-                            <div style={{
-                                padding: '16px',
-                                background: 'linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%)',
-                                borderRadius: '12px',
-                                borderLeft: '4px solid #14b8a6',
-                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                transition: 'all 0.3s ease',
-                                cursor: 'pointer'
-                            }}>
-                                <p style={{
-                                    fontSize: '17px',
-                                    color: '#374151',
-                                    fontWeight: '500',
-                                    margin: 0
-                                }}>📊 After <span style={{ fontWeight: 'bold', color: '#2563eb' }}>1 minute </span>
-                                the content will be auto submitted and you will get <span style={{ fontWeight: 'bold', color: '#2563eb' }}>Agent feedback</span></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Chat Bot - Right Side */}
-                <div style={{ maxWidth: '1000px', flex: 1 }}>
-                    <div style={{
-                        background: 'rgba(255, 255, 255, 0.9)',
-                        backdropFilter: 'blur(10px)',
-                        borderRadius: '20px',
-                        boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.25)',
-                        border: '1px solid rgba(255, 255, 255, 0.3)',
-                        height: 'calc(100vh - 120px)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        overflow: 'hidden'
-                    }}>
-                        {/* Header */}
-                        <div style={{
-                            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%)',
-                            padding: '20px',
-                            color: 'white'
-                        }}>
-                            <div style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center'
+                                gap: '12px',
+                                marginBottom: '24px'
                             }}>
                                 <div style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)',
+                                    borderRadius: '16px',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '16px'
+                                    justifyContent: 'center',
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    fontSize: '18px',
+                                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
                                 }}>
-                                    <div style={{
-                                        width: '48px',
-                                        height: '48px',
-                                        background: 'rgba(255, 255, 255, 0.2)',
-                                        borderRadius: '16px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        backdropFilter: 'blur(10px)',
-                                        fontSize: '24px'
-                                    }}>
-                                        🤖
-                                    </div>
-                                    <div>
-                                        <h2 style={{
-                                            fontSize: '30px',
-                                            fontWeight: 'bold',
-                                            margin: 0,
-                                            background: 'linear-gradient(135deg, #ffffff 0%, #dbeafe 100%)',
-                                            WebkitBackgroundClip: 'text',
-                                            WebkitTextFillColor: 'transparent'
-                                        }}>GenAI JAM Agent</h2>
-                                        <p style={{
-                                            color: '#dbeafe',
-                                            fontSize: '14px',
-                                            margin: 0
-                                        }}>Your AI-powered speaking coach</p>
-                                    </div>
+                                    📋
+                                </div>
+                                <h3 style={{
+                                    fontSize: '30px',
+                                    fontWeight: 'bold',
+                                    color: '#1f2937',
+                                    margin: 0
+                                }}>JAM Session Guide</h3>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                <div style={{
+                                    padding: '16px',
+                                    background: 'linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%)',
+                                    borderRadius: '12px',
+                                    borderLeft: '4px solid #3b82f6',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                    transition: 'all 0.3s ease',
+                                    cursor: 'pointer'
+                                }}>
+                                    <p style={{
+                                        fontSize: '17px',
+                                        color: '#374151',
+                                        fontWeight: '500',
+                                        margin: 0
+                                    }}>💬 Start with greeting: <span style={{ fontWeight: 'bold', color: '#2563eb' }}>"hi"</span></p>
                                 </div>
                                 <div style={{
-                                    display: 'flex',
-                                    gap: '12px'
+                                    padding: '16px',
+                                    background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+                                    borderRadius: '12px',
+                                    borderLeft: '4px solid #22c55e',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                    transition: 'all 0.3s ease',
+                                    cursor: 'pointer'
                                 }}>
-                                    <button 
-                                        style={{
-                                            background: 'rgba(255, 255, 255, 0.2)',
-                                            color: 'white',
-                                            border: 'none',
-                                            padding: '10px 20px',
-                                            borderRadius: '12px',
-                                            cursor: 'pointer',
-                                            fontWeight: '500',
-                                            transition: 'all 0.3s ease',
-                                            backdropFilter: 'blur(10px)'
-                                        }}
-                                        onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
-                                        onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
-                                        onClick={() => window.location.href = '/activities'}
-                                    >
-                                        ← Back
-                                    </button>
-                                    <button 
-                                        style={{
-                                            background: 'rgba(255, 255, 255, 0.2)',
-                                            color: 'white',
-                                            border: 'none',
-                                            padding: '10px 16px',
-                                            borderRadius: '12px',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.3s ease',
-                                            backdropFilter: 'blur(10px)',
-                                            fontSize: '16px'
-                                        }}
-                                        onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
-                                        onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
-                                        onClick={() => {
-                                            setIsMuted(!isMuted);
-                                            if (!isMuted && 'speechSynthesis' in window) {
-                                                speechSynthesis.cancel();
-                                            }
-                                        }}
-                                    >
-                                        {isMuted ? '🔇' : '🔊'}
-                                    </button>
-                                    <button 
-                                        style={{
-                                            background: 'rgba(255, 255, 255, 0.2)',
-                                            color: 'white',
-                                            border: 'none',
-                                            padding: '10px 16px',
-                                            borderRadius: '12px',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.3s ease',
-                                            backdropFilter: 'blur(10px)',
-                                            fontSize: '16px'
-                                        }}
-                                        onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
-                                        onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
-                                        onClick={() => {
-                                            if ('speechSynthesis' in window) {
-                                                speechSynthesis.cancel();
-                                            }
-                                        }}
-                                    >
-                                        ⏹️
-                                    </button>
+                                    <p style={{
+                                        fontSize: '17px',
+                                        color: '#374151',
+                                        fontWeight: '500',
+                                        margin: 0
+                                    }}>🎯 Type <span style={{ fontWeight: 'bold', color: '#16a34a' }}>yes</span> then Agent will <span style={{ fontWeight: 'bold', color: '#16a34a' }}>start session</span></p>
+                                </div>
+                                <div style={{
+                                    padding: '16px',
+                                    background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
+                                    borderRadius: '12px',
+                                    borderLeft: '4px solid #eab308',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                    transition: 'all 0.3s ease',
+                                    cursor: 'pointer'
+                                }}>
+                                    <p style={{
+                                        fontSize: '17px',
+                                        color: '#374151',
+                                        fontWeight: '500',
+                                        margin: 0
+                                    }}>🎯 Choose <span style={{ fontWeight: 'bold', color: '#2563eb' }}>1 topic</span> Agent will provide 2 topics and speak for <span style={{ fontWeight: 'bold', color: '#2563eb' }}>1 minute</span></p>
+                                </div>
+                                <div style={{
+                                    padding: '16px',
+                                    background: 'linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%)',
+                                    borderRadius: '12px',
+                                    borderLeft: '4px solid #a855f7',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                    transition: 'all 0.3s ease',
+                                    cursor: 'pointer'
+                                }}>
+                                    <p style={{
+                                        fontSize: '17px',
+                                        color: '#374151',
+                                        fontWeight: '500',
+                                        margin: 0
+                                    }}>🎤 Remember the rules, when you click <span style={{ fontWeight: 'bold', color: '#2563eb' }}>Record </span>
+                                        it will <span style={{ fontWeight: 'bold', color: 'red' }}>start recording voice</span>, when <span style={{ fontWeight: 'bold', color: '#2563eb' }}>clicked </span>again <span style={{ fontWeight: 'bold', color: 'red' }}>stop recording</span></p>
+                                </div>
+                                <div style={{
+                                    padding: '16px',
+                                    background: 'linear-gradient(135deg, #fef2f2 0%, #fecaca 100%)',
+                                    borderRadius: '12px',
+                                    borderLeft: '4px solid #ef4444',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                    transition: 'all 0.3s ease',
+                                    cursor: 'pointer'
+                                }}>
+                                    <p style={{
+                                        fontSize: '17px',
+                                        color: '#374151',
+                                        fontWeight: '500',
+                                        margin: 0
+                                    }}>💭 Take time for <span style={{ fontWeight: 'bold', color: '#2563eb' }}>30 sec </span>to think before starting,
+                                        you can also use <span style={{ fontWeight: 'bold', color: '#2563eb' }}>1 minute</span> to record your voice
+                                    </p>
+                                </div>
+                                <div style={{
+                                    padding: '16px',
+                                    background: 'linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%)',
+                                    borderRadius: '12px',
+                                    borderLeft: '4px solid #14b8a6',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                    transition: 'all 0.3s ease',
+                                    cursor: 'pointer'
+                                }}>
+                                    <p style={{
+                                        fontSize: '17px',
+                                        color: '#374151',
+                                        fontWeight: '500',
+                                        margin: 0
+                                    }}>📊 After <span style={{ fontWeight: 'bold', color: '#2563eb' }}>1 minute </span>
+                                        the content will be auto submitted and you will get <span style={{ fontWeight: 'bold', color: '#2563eb' }}>Agent feedback</span></p>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        {/* Chat Area */}
+                    {/* Chat Bot - Right Side */}
+                    <div style={{ maxWidth: '1000px', flex: 1 }}>
                         <div style={{
-                            flex: 1,
-                            overflowY: 'auto',
-                            padding: '22px',
-                            background: 'linear-gradient(180deg, rgba(249, 250, 251, 0.5) 0%, rgba(255, 255, 255, 0.5) 100%)'
-                        }} ref={chatRef}>
-                            {chat.length === 0 && (
+                            background: 'rgba(255, 255, 255, 0.9)',
+                            backdropFilter: 'blur(10px)',
+                            borderRadius: '20px',
+                            boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.25)',
+                            border: '1px solid rgba(255, 255, 255, 0.3)',
+                            height: 'calc(100vh - 120px)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            overflow: 'hidden'
+                        }}>
+                            {/* Header */}
+                            <div style={{
+                                background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%)',
+                                padding: '20px',
+                                color: 'white'
+                            }}>
                                 <div style={{
-                                    textAlign: 'center',
-                                    paddingTop: '0px',
-                                    paddingBottom: '64px'
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
                                 }}>
                                     <div style={{
-                                        background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%)',
-                                        width: '70px',
-                                        height: '70px',
-                                        borderRadius: '24px',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'center',
-                                        margin: '0 auto 24px auto',
-                                        fontSize: '48px',
-                                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                                        animation: 'pulse 2s infinite'
-                                    }}>
-                                        👋
-                                    </div>
-                                    <h3 style={{
-                                        fontSize: '28px',
-                                        fontWeight: 'bold',
-                                        color: '#1f2937',
-                                        marginBottom: '8px'
-                                    }}>Welcome to JAM Session!</h3>
-                                    <p style={{
-                                        fontSize: '15px',
-                                        color: '#4b5563',
-                                        lineHeight: '1.6',
-                                        maxWidth: '400px',
-                                        margin: '0 auto'
-                                    }}>
-                                        I'm your GenAI Agent ready to help you practice speaking.<br />
-                                        <span style={{ color: '#4f46e5', fontWeight: '600' }}>Let's start your JAM session!</span>
-                                    </p>
-                                </div>
-                            )}
-                            {chat.map((msg, i) => (
-                                <div key={i} style={{
-                                    display: 'flex',
-                                    justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-                                    marginBottom: '24px'
-                                }}>
-                                    <div style={{
-                                        maxWidth: '600px',
-                                        padding: '16px 24px',
-                                        borderRadius: '24px',
-                                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                                        transition: 'all 0.3s ease',
-                                        ...(msg.sender === 'user' ? {
-                                            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-                                            color: 'white',
-                                            marginLeft: 'auto'
-                                        } : {
-                                            background: 'white',
-                                            border: '1px solid #f3f4f6',
-                                            color: '#1f2937'
-                                        })
-                                    }}>
-                                        <div dangerouslySetInnerHTML={{ __html: formatMessage(msg.text) }} />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Input Area */}
-                        <div style={{
-                            borderTop: '1px solid #f3f4f6',
-                            padding: '32px',
-                            background: 'rgba(255, 255, 255, 0.8)',
-                            backdropFilter: 'blur(10px)'
-                        }}>
-                            {isRecording && (
-                                <div style={{
-                                    textAlign: 'center',
-                                    marginBottom: '16px',
-                                    padding: '16px',
-                                    background: 'linear-gradient(135deg, #fef2f2 0%, #fce7f3 100%)',
-                                    borderRadius: '12px',
-                                    border: '1px solid #fecaca',
-                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                                }}>
-                                    <div style={{
-                                        fontSize: '18px',
-                                        fontWeight: 'bold',
-                                        marginBottom: '8px',
-                                        color: timer > 50 ? '#dc2626' : '#16a34a',
-                                        animation: timer > 50 ? 'pulse 1s infinite' : 'none'
-                                    }}>
-                                        🎙️ Recording: {timer}s / 60s
-                                    </div>
-                                    <div style={{
-                                        width: '100%',
-                                        background: '#e5e7eb',
-                                        borderRadius: '9999px',
-                                        height: '8px',
-                                        boxShadow: 'inset 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+                                        gap: '16px'
                                     }}>
                                         <div style={{
-                                            height: '8px',
-                                            borderRadius: '9999px',
-                                            transition: 'all 1s ease',
-                                            background: timer > 50 
-                                                ? 'linear-gradient(135deg, #f87171 0%, #dc2626 100%)' 
-                                                : 'linear-gradient(135deg, #4ade80 0%, #16a34a 100%)',
-                                            width: `${(timer/60)*100}%`
-                                        }}></div>
+                                            width: '48px',
+                                            height: '48px',
+                                            background: 'rgba(255, 255, 255, 0.2)',
+                                            borderRadius: '16px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            backdropFilter: 'blur(10px)',
+                                            fontSize: '24px'
+                                        }}>
+                                            🤖
+                                        </div>
+                                        <div>
+                                            <h2 style={{
+                                                fontSize: '30px',
+                                                fontWeight: 'bold',
+                                                margin: 0,
+                                                background: 'linear-gradient(135deg, #ffffff 0%, #dbeafe 100%)',
+                                                WebkitBackgroundClip: 'text',
+                                                WebkitTextFillColor: 'transparent'
+                                            }}>GenAI JAM Agent</h2>
+                                            <p style={{
+                                                color: '#dbeafe',
+                                                fontSize: '14px',
+                                                margin: 0
+                                            }}>Your AI-powered speaking coach</p>
+                                        </div>
+                                    </div>
+                                    <div style={{
+                                        display: 'flex',
+                                        gap: '12px'
+                                    }}>
+                                        <button
+                                            style={{
+                                                background: 'rgba(255, 255, 255, 0.2)',
+                                                color: 'white',
+                                                border: 'none',
+                                                padding: '10px 20px',
+                                                borderRadius: '12px',
+                                                cursor: 'pointer',
+                                                fontWeight: '500',
+                                                transition: 'all 0.3s ease',
+                                                backdropFilter: 'blur(10px)'
+                                            }}
+                                            onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
+                                            onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+                                            onClick={() => window.location.href = '/activities'}
+                                        >
+                                            ← Back
+                                        </button>
+                                        <button
+                                            style={{
+                                                background: 'rgba(255, 255, 255, 0.2)',
+                                                color: 'white',
+                                                border: 'none',
+                                                padding: '10px 16px',
+                                                borderRadius: '12px',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.3s ease',
+                                                backdropFilter: 'blur(10px)',
+                                                fontSize: '16px'
+                                            }}
+                                            onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
+                                            onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+                                            onClick={() => {
+                                                setIsMuted(!isMuted);
+                                                if (!isMuted && 'speechSynthesis' in window) {
+                                                    speechSynthesis.cancel();
+                                                }
+                                            } }
+                                        >
+                                            {isMuted ? '🔇' : '🔊'}
+                                        </button>
+                                        <button
+                                            style={{
+                                                background: 'rgba(255, 255, 255, 0.2)',
+                                                color: 'white',
+                                                border: 'none',
+                                                padding: '10px 16px',
+                                                borderRadius: '12px',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.3s ease',
+                                                backdropFilter: 'blur(10px)',
+                                                fontSize: '16px'
+                                            }}
+                                            onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
+                                            onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+                                            onClick={() => {
+                                                if ('speechSynthesis' in window) {
+                                                    speechSynthesis.cancel();
+                                                }
+                                            } }
+                                        >
+                                            ⏹️
+                                        </button>
                                     </div>
                                 </div>
-                            )}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                <textarea
-                                    value={message}
-                                    onChange={(e) => setMessage(e.target.value)}
-                                    onKeyDown={handleKeyDown}
-                                    placeholder='Type "hi" to start your JAM session...'
-                                    disabled={isLoading}
-                                    rows={4}
-                                    style={{
-                                        width: '100%',
-                                        padding: '24px',
-                                        border: '1px solid #d1d5db',
-                                        borderRadius: '16px',
-                                        resize: 'none',
-                                        outline: 'none',
-                                        transition: 'all 0.3s ease',
-                                        background: 'rgba(249, 250, 251, 0.5)',
-                                        fontSize: '18px',
-                                        fontFamily: 'inherit',
-                                        color: '#1f2937'
-                                    }}
-                                    onFocus={(e) => {
-                                        e.target.style.borderColor = '#4f46e5';
-                                        e.target.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.1)';
-                                        e.target.style.background = 'white';
-                                    }}
-                                    onBlur={(e) => {
-                                        e.target.style.borderColor = '#d1d5db';
-                                        e.target.style.boxShadow = 'none';
-                                        e.target.style.background = 'rgba(249, 250, 251, 0.5)';
-                                    }}
-                                />
-                                <div style={{ display: 'flex', gap: '12px' }}>
-                                    <button
-                                        onClick={toggleRecording}
+                            </div>
+
+                            {/* Chat Area */}
+                            <div style={{
+                                flex: 1,
+                                overflowY: 'auto',
+                                padding: '22px',
+                                background: 'linear-gradient(180deg, rgba(249, 250, 251, 0.5) 0%, rgba(255, 255, 255, 0.5) 100%)'
+                            }} ref={chatRef}>
+                                {chat.length === 0 && (
+                                    <div style={{
+                                        textAlign: 'center',
+                                        paddingTop: '0px',
+                                        paddingBottom: '64px'
+                                    }}>
+                                        <div style={{
+                                            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%)',
+                                            width: '70px',
+                                            height: '70px',
+                                            borderRadius: '24px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            margin: '0 auto 24px auto',
+                                            fontSize: '48px',
+                                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                                            animation: 'pulse 2s infinite'
+                                        }}>
+                                            👋
+                                        </div>
+                                        <h3 style={{
+                                            fontSize: '28px',
+                                            fontWeight: 'bold',
+                                            color: '#1f2937',
+                                            marginBottom: '8px'
+                                        }}>Welcome to JAM Session!</h3>
+                                        <p style={{
+                                            fontSize: '15px',
+                                            color: '#4b5563',
+                                            lineHeight: '1.6',
+                                            maxWidth: '400px',
+                                            margin: '0 auto'
+                                        }}>
+                                            I'm your GenAI Agent ready to help you practice speaking.<br />
+                                            <span style={{ color: '#4f46e5', fontWeight: '600' }}>Let's start your JAM session!</span>
+                                        </p>
+                                    </div>
+                                )}
+                                {chat.map((msg, i) => (
+                                    <div key={i} style={{
+                                        display: 'flex',
+                                        justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start',
+                                        marginBottom: '24px'
+                                    }}>
+                                        <div style={{
+                                            maxWidth: '600px',
+                                            padding: '16px 24px',
+                                            borderRadius: '24px',
+                                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                                            transition: 'all 0.3s ease',
+                                            ...(msg.sender === 'user' ? {
+                                                background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                                                color: 'white',
+                                                marginLeft: 'auto'
+                                            } : {
+                                                background: 'white',
+                                                border: '1px solid #f3f4f6',
+                                                color: '#1f2937'
+                                            })
+                                        }}>
+                                            <div dangerouslySetInnerHTML={{ __html: formatMessage(msg.text) }} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Input Area */}
+                            <div style={{
+                                borderTop: '1px solid #f3f4f6',
+                                padding: '32px',
+                                background: 'rgba(255, 255, 255, 0.8)',
+                                backdropFilter: 'blur(10px)'
+                            }}>
+                                {isRecording && (
+                                    <div style={{
+                                        textAlign: 'center',
+                                        marginBottom: '16px',
+                                        padding: '16px',
+                                        background: 'linear-gradient(135deg, #fef2f2 0%, #fce7f3 100%)',
+                                        borderRadius: '12px',
+                                        border: '1px solid #fecaca',
+                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                                    }}>
+                                        <div style={{
+                                            fontSize: '18px',
+                                            fontWeight: 'bold',
+                                            marginBottom: '8px',
+                                            color: timer > 50 ? '#dc2626' : '#16a34a',
+                                            animation: timer > 50 ? 'pulse 1s infinite' : 'none'
+                                        }}>
+                                            🎙️ Recording: {timer}s / 60s
+                                        </div>
+                                        <div style={{
+                                            width: '100%',
+                                            background: '#e5e7eb',
+                                            borderRadius: '9999px',
+                                            height: '8px',
+                                            boxShadow: 'inset 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+                                        }}>
+                                            <div style={{
+                                                height: '8px',
+                                                borderRadius: '9999px',
+                                                transition: 'all 1s ease',
+                                                background: timer > 50
+                                                    ? 'linear-gradient(135deg, #f87171 0%, #dc2626 100%)'
+                                                    : 'linear-gradient(135deg, #4ade80 0%, #16a34a 100%)',
+                                                width: `${(timer / 60) * 100}%`
+                                            }}></div>
+                                        </div>
+                                    </div>
+                                )}
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                    <textarea
+                                        value={message}
+                                        onChange={(e) => setMessage(e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                        placeholder='Type "hi" to start your JAM session...'
                                         disabled={isLoading}
-                                        title={isRecording ? 'Stop Recording' : 'Start 1-Minute Recording'}
+                                        rows={4}
                                         style={{
-                                            flex: 1,
-                                            padding: '12px 20px',
-                                            borderRadius: '12px',
-                                            fontWeight: '600',
-                                            fontSize: '14px',
-                                            border: 'none',
-                                            cursor: 'pointer',
+                                            width: '100%',
+                                            padding: '24px',
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '16px',
+                                            resize: 'none',
+                                            outline: 'none',
                                             transition: 'all 0.3s ease',
-                                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                            background: isRecording 
-                                                ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
-                                                : 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
-                                            color: 'white'
+                                            background: 'rgba(249, 250, 251, 0.5)',
+                                            fontSize: '18px',
+                                            fontFamily: 'inherit',
+                                            color: '#1f2937'
                                         }}
-                                        onMouseOver={(e) => {
-                                            e.target.style.transform = 'scale(1.02)';
-                                            e.target.style.background = isRecording 
-                                                ? 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)'
-                                                : 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)';
-                                        }}
-                                        onMouseOut={(e) => {
-                                            e.target.style.transform = 'scale(1)';
-                                            e.target.style.background = isRecording 
-                                                ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
-                                                : 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
-                                        }}
-                                    >
-                                        {isRecording ? `🔴 ${timer}s` : '🎤 Record'}
-                                    </button>
-                                    <button
-                                        onClick={() => sendMessage()}
-                                        disabled={isLoading || !message.trim()}
-                                        style={{
-                                            flex: 1,
-                                            padding: '12px 20px',
-                                            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-                                            color: 'white',
-                                            borderRadius: '12px',
-                                            fontWeight: '600',
-                                            fontSize: '14px',
-                                            border: 'none',
-                                            cursor: isLoading || !message.trim() ? 'not-allowed' : 'pointer',
-                                            transition: 'all 0.3s ease',
-                                            opacity: isLoading || !message.trim() ? 0.5 : 1,
-                                            boxShadow: '0 4px 6px -1px rgba(79, 70, 229, 0.2)'
-                                        }}
-                                        onMouseOver={(e) => {
-                                            if (!isLoading && message.trim()) {
+                                        onFocus={(e) => {
+                                            e.target.style.borderColor = '#4f46e5';
+                                            e.target.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.1)';
+                                            e.target.style.background = 'white';
+                                        } }
+                                        onBlur={(e) => {
+                                            e.target.style.borderColor = '#d1d5db';
+                                            e.target.style.boxShadow = 'none';
+                                            e.target.style.background = 'rgba(249, 250, 251, 0.5)';
+                                        } } />
+                                    <div style={{ display: 'flex', gap: '12px' }}>
+                                        <button
+                                            onClick={toggleRecording}
+                                            disabled={isLoading}
+                                            title={isRecording ? 'Stop Recording' : 'Start 1-Minute Recording'}
+                                            style={{
+                                                flex: 1,
+                                                padding: '12px 20px',
+                                                borderRadius: '12px',
+                                                fontWeight: '600',
+                                                fontSize: '14px',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.3s ease',
+                                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                                background: isRecording
+                                                    ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                                                    : 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                                                color: 'white'
+                                            }}
+                                            onMouseOver={(e) => {
                                                 e.target.style.transform = 'scale(1.02)';
-                                                e.target.style.background = 'linear-gradient(135deg, #4338ca 0%, #6d28d9 100%)';
-                                            }
-                                        }}
-                                        onMouseOut={(e) => {
-                                            e.target.style.transform = 'scale(1)';
-                                            e.target.style.background = 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)';
-                                        }}
-                                    >
-                                        {isLoading ? '⏳ Sending...' : '📤 Send'}
-                                    </button>
+                                                e.target.style.background = isRecording
+                                                    ? 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)'
+                                                    : 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)';
+                                            } }
+                                            onMouseOut={(e) => {
+                                                e.target.style.transform = 'scale(1)';
+                                                e.target.style.background = isRecording
+                                                    ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                                                    : 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
+                                            } }
+                                        >
+                                            {isRecording ? `🔴 ${timer}s` : '🎤 Record'}
+                                        </button>
+                                        <button
+                                            onClick={() => sendMessage()}
+                                            disabled={isLoading || !message.trim()}
+                                            style={{
+                                                flex: 1,
+                                                padding: '12px 20px',
+                                                background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                                                color: 'white',
+                                                borderRadius: '12px',
+                                                fontWeight: '600',
+                                                fontSize: '14px',
+                                                border: 'none',
+                                                cursor: isLoading || !message.trim() ? 'not-allowed' : 'pointer',
+                                                transition: 'all 0.3s ease',
+                                                opacity: isLoading || !message.trim() ? 0.5 : 1,
+                                                boxShadow: '0 4px 6px -1px rgba(79, 70, 229, 0.2)'
+                                            }}
+                                            onMouseOver={(e) => {
+                                                if (!isLoading && message.trim()) {
+                                                    e.target.style.transform = 'scale(1.02)';
+                                                    e.target.style.background = 'linear-gradient(135deg, #4338ca 0%, #6d28d9 100%)';
+                                                }
+                                            } }
+                                            onMouseOut={(e) => {
+                                                e.target.style.transform = 'scale(1)';
+                                                e.target.style.background = 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)';
+                                            } }
+                                        >
+                                            {isLoading ? '⏳ Sending...' : '📤 Send'}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                </div>
-            </div>
+
+                {/* Completion Message Overlay */}
+                {showCompletionMessage && (
+                    <div style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        background: 'rgba(0, 0, 0, 0.8)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 9999,
+                        backdropFilter: 'blur(10px)'
+                    }}>
+                        <div style={{
+                            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%)',
+                            padding: '60px 80px',
+                            borderRadius: '30px',
+                            textAlign: 'center',
+                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                            border: '3px solid rgba(255, 255, 255, 0.3)',
+                            backdropFilter: 'blur(20px)',
+                            maxWidth: '600px',
+                            animation: 'fadeInScale 0.8s ease-out'
+                        }}>
+                            <div style={{
+                                fontSize: '80px',
+                                marginBottom: '30px',
+                                animation: 'bounce 2s infinite'
+                            }}>🎉</div>
+                            <h2 style={{
+                                fontSize: '42px',
+                                fontWeight: 'bold',
+                                color: 'white',
+                                marginBottom: '20px',
+                                textShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+                                lineHeight: '1.2'
+                            }}>Your JAM Session Completed Successfully!</h2>
+                            <p style={{
+                                fontSize: '24px',
+                                color: 'rgba(255, 255, 255, 0.9)',
+                                margin: 0,
+                                fontWeight: '500',
+                                textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+                            }}>Thank you for attending</p>
+                            <div style={{
+                                marginTop: '40px',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                gap: '15px'
+                            }}>
+                                <span style={{ fontSize: '30px', animation: 'pulse 1.5s infinite' }}>⭐</span>
+                                <span style={{ fontSize: '30px', animation: 'pulse 1.5s infinite 0.2s' }}>⭐</span>
+                                <span style={{ fontSize: '30px', animation: 'pulse 1.5s infinite 0.4s' }}>⭐</span>
+                                <span style={{ fontSize: '30px', animation: 'pulse 1.5s infinite 0.6s' }}>⭐</span>
+                                <span style={{ fontSize: '30px', animation: 'pulse 1.5s infinite 0.8s' }}>⭐</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div><style>{`
+                @keyframes fadeInScale {
+                    0% {
+                        opacity: 0;
+                        transform: scale(0.8);
+                    }
+                    100% {
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+                }
+                @keyframes bounce {
+                    0%, 20%, 50%, 80%, 100% {
+                        transform: translateY(0);
+                    }
+                    40% {
+                        transform: translateY(-20px);
+                    }
+                    60% {
+                        transform: translateY(-10px);
+                    }
+                }
+                @keyframes pulse {
+                    0%, 100% {
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+                    50% {
+                        opacity: 0.7;
+                        transform: scale(1.1);
+                    }
+                }
+                @keyframes blink {
+                    0%, 50% { opacity: 1; }
+                    51%, 100% { opacity: 0; }
+                }
+            `}</style></>
     );
 }
 
