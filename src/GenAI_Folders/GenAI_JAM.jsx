@@ -57,12 +57,13 @@ function GenAI_JAM() {
             const interval = setInterval(() => {
                 setTimer(prev => {
                     const newTime = prev + 1;
-                    if (newTime >= 60) {
+                    if (newTime >= 60 && !isSubmitting) {
                         // Auto-submit at exactly 60 seconds
                         console.log('Timer reached 60 seconds, auto-submitting...');
                         
+                        setIsSubmitting(true);
+                        
                         if (mediaRecorderRef.current && isRecordingRef.current) {
-                            setIsSubmitting(true);
                             mediaRecorderRef.current.stop();
                             setIsRecording(false);
                             isRecordingRef.current = false;
@@ -74,11 +75,11 @@ function GenAI_JAM() {
                         setTimerInterval(null);
                         setTimer(0);
                         
-                        // Submit accumulated text immediately
+                        // Submit accumulated text once
                         setTimeout(() => {
                             const finalText = accumulatedTextRef.current.trim();
                             console.log('Submitting text:', finalText);
-                            if (finalText) {
+                            if (finalText && !isSubmitting) {
                                 const cleanText = finalText.replace(/(\b\w+\b(?:\s+\b\w+\b)*?)\s+\1+/g, '$1');
                                 sendMessage(cleanText);
                             }
@@ -211,10 +212,8 @@ function GenAI_JAM() {
                 let interimTranscript = '';
                 let finalTranscript = '';
                 
-                console.log('Speech recognition result:', event.results);
-                
-                // Process all results
-                for (let i = 0; i < event.results.length; i++) {
+                // Only process NEW results from the last result index
+                for (let i = event.resultIndex; i < event.results.length; i++) {
                     const transcript = event.results[i][0].transcript;
                     if (event.results[i].isFinal) {
                         finalTranscript += transcript + ' ';
@@ -223,18 +222,16 @@ function GenAI_JAM() {
                     }
                 }
                 
-                // Update accumulated text with final results
+                // Only add NEW final transcript to avoid duplicates
                 if (finalTranscript.trim()) {
                     const newAccumulated = accumulatedTextRef.current + finalTranscript;
                     accumulatedTextRef.current = newAccumulated;
                     setAccumulatedText(newAccumulated);
                     setMessage(newAccumulated + interimTranscript);
                 } else if (interimTranscript.trim()) {
-                    // Show interim results with accumulated text
+                    // Show interim results with current accumulated text
                     setMessage(accumulatedTextRef.current + interimTranscript);
                 }
-                
-                console.log('Current message:', accumulatedTextRef.current + interimTranscript);
             };
     
             recognition.onerror = (event) => {
