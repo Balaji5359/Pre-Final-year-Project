@@ -12,12 +12,12 @@ const MentorProfile = () => {
       setLoading(true);
       const url = 'https://jaumunpkj2.execute-api.ap-south-1.amazonaws.com/dev/signup/mentor_signup/mentor_data_send';
       const storedEmail = localStorage.getItem("email");
-      
+
       if (!storedEmail) {
         navigate('/mentor');
         return;
       }
-      
+
       try {
         const response = await fetch(url, {
           method: 'POST',
@@ -26,9 +26,9 @@ const MentorProfile = () => {
           },
           body: JSON.stringify({ email: storedEmail }),
         });
-        
+
         const data = await response.json();
-        
+
         if (data.statusCode === 200 && data.body) {
           const parsedData = typeof data.body === "string" ? JSON.parse(data.body) : data.body;
           setMentorData(parsedData);
@@ -39,7 +39,7 @@ const MentorProfile = () => {
         setLoading(false);
       }
     };
-    
+
     fetchMentorData();
   }, [navigate]);
 
@@ -71,7 +71,7 @@ const MentorProfile = () => {
             <div className="profile-avatar">
               <i className="fas fa-user-circle"></i>
             </div>
-            
+
             <div className="profile-info">
               <h3>{mentorData.fullname}</h3>
               <p className="expertise">{mentorData.designation}</p>
@@ -113,10 +113,15 @@ const MentorProfile = () => {
               <i className="fas fa-calendar"></i>
               Manage Schedule
             </button>
-            <button className="action-btn secondary">
+
+            <button
+              className="action-btn secondary"
+              onClick={() => navigate('/mentor_student_tests')}
+            >
               <i className="fas fa-users"></i>
-              View Students
+              View Students Tests Data
             </button>
+
             <button className="action-btn secondary">
               <i className="fas fa-edit"></i>
               Edit Profile

@@ -7,7 +7,8 @@ const Mentor = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: ''
+    password: '',
+    secret_key: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -29,88 +30,60 @@ const Mentor = () => {
     setError('');
     setApiMessage('');
 
+    let url = '';
+    let payload = {};
+    const headers = { "Content-Type": "application/json" };
+
     if (isLogin) {
-      // Login API call
-      const url = "https://jaumunpkj2.execute-api.ap-south-1.amazonaws.com/dev/signup/mentor_signup/mentor_login";
-      const userdata = {
+      url = "https://jaumunpkj2.execute-api.ap-south-1.amazonaws.com/dev/signup/mentor_signup/mentor_login";
+      payload = {
         email: formData.email,
         password: formData.password,
+        secret_key: formData.secret_key
       };
-      const headers = {
-        "Content-Type": "application/json",
-      };
-
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify(userdata),
-        });
-        const data = await response.json();
-        setStatusCode(data.statusCode);
-        setMessage(data.body);
-
-        try {
-          const parsedBody = JSON.parse(data.body);
-          setApiMessage(parsedBody.message || "");
-        } catch (e) {
-          setApiMessage(data.body || "");
-        }
-
-        if (data.statusCode === 200) {
-          localStorage.setItem("email", formData.email);
-          navigate("/mentor_profile");
-        }
-      } catch (error) {
-        setError("Failed to connect to server. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
     } else {
-      // Signup API call
-      const url = 'https://jaumunpkj2.execute-api.ap-south-1.amazonaws.com/dev/signup/mentor_signup';
-      const userData = {
+      url = "https://jaumunpkj2.execute-api.ap-south-1.amazonaws.com/dev/signup/mentor_signup";
+      payload = {
         body: {
           name: formData.name,
           email: formData.email,
           password: formData.password
         }
       };
-      const headers = {
-        'Content-Type': 'application/json'
-      };
+    }
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      setStatusCode(data.statusCode);
+      setMessage(data.body);
 
       try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify(userData),
-        });
-        const data = await response.json();
-        setStatusCode(data.statusCode);
-        setMessage(data.body);
-
-        try {
-          const parsedBody = JSON.parse(data.body);
-          setApiMessage(parsedBody.message || "");
-        } catch (e) {
-          setApiMessage(data.body || "");
-        }
-
-        if (data.statusCode === 200) {
-          localStorage.setItem("email", formData.email);
-          navigate("/mentor_profile_create");
-        }
-      } catch (error) {
-        setError("Failed to connect to server. Please try again.");
-      } finally {
-        setIsLoading(false);
+        const parsedBody = JSON.parse(data.body);
+        setApiMessage(parsedBody.message || "");
+      } catch {
+        setApiMessage(data.body || "");
       }
+
+      if (data.statusCode === 200) {
+        localStorage.setItem("email", formData.email);
+        navigate(isLogin ? "/mentor_profile" : "/mentor_profile_create");
+      }
+    } catch {
+      setError("Failed to connect to server. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="mentor-container">
+      
+
       <div className="mentor-form-wrapper">
         <div className="mentor-form-header">
           <h2>{isLogin ? 'Mentor Login' : 'Mentor Signup'}</h2>
@@ -171,13 +144,44 @@ const Mentor = () => {
             />
           </div>
 
+          {isLogin && (
+            <div className="form-group">
+              <label>Secret Key</label>
+              <input
+                type="password"
+                name="secret_key"
+                value={formData.secret_key}
+                onChange={handleInputChange}
+                required
+                placeholder="Enter your secret key"
+              />
+            </div>
+          )}
+
           <button type="submit" className="submit-btn" disabled={isLoading}>
-            {isLoading
-              ? (isLogin ? 'Logging in...' : 'Signing up...')
-              : (isLogin ? 'Login' : 'Create Account')}
+            {isLoading ? (isLogin ? 'Logging in...' : 'Signing up...') : (isLogin ? 'Login' : 'Create Account')}
           </button>
+
           {error && <div className="error-message">{error}</div>}
           {apiMessage && <div className="api-message">{apiMessage}</div>}
+
+          <div className="helper-text">
+            {isLogin ? (
+              <>
+                <p>Enter your credentials to log in.</p>
+                <p>If you don't have an account, <button type="button" className="link-btn" onClick={() => setIsLogin(false)}>click here to sign up</button>.</p>
+              </>
+            ) : (
+              <>
+                <p>Enter your details below to create an account.</p>
+                <p>If you have an account, <button type="button" className="link-btn" onClick={() => setIsLogin(true)}>click here to log in</button>.</p>
+              </>
+            )}
+          </div>
+
+          <div className="back-home">
+            <button type="button" className="back-btn" onClick={() => navigate('/')}>Back to Home</button>
+          </div>
         </form>
       </div>
     </div>

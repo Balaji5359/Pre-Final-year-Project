@@ -61,7 +61,7 @@ const MentorProfileCreate = () => {
       if (response.status === 200 && responseData.statusCode === 200) {
         setMessage("Profile Created Successfully");
         setTimeout(() => {
-          navigate("/mentor-profile");
+          navigate("/mentor");
         }, 1000);
       } else {
         setMessage(responseData.body || "Failed to create profile");
@@ -206,6 +206,7 @@ const MentorProfileCreate = () => {
                   Select Branch
                 </option>
                 <option value="CSE">Computer Science</option>
+                <option value="CST">Computer Science and Technology</option>
                 <option value="ECE">Electronics</option>
                 <option value="ME">Mechanical</option>
                 <option value="CE">Civil</option>

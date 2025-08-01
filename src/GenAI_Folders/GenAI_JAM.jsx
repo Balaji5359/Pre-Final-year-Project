@@ -462,7 +462,7 @@ function GenAI_JAM() {
                                         color: '#374151',
                                         fontWeight: '500',
                                         margin: 0
-                                    }}>💬 Start with greeting: <span style={{ fontWeight: 'bold', color: '#2563eb' }}>"hi"</span></p>
+                                    }}>💬 Start with greeting: <span style={{ fontWeight: 'bold', color: '#2563eb' }}>"hi"</span>, mute mike if no need 🔇</p>
                                 </div>
                                 <div style={{
                                     padding: '16px',

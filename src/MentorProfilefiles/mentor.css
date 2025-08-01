@@ -294,3 +294,124 @@
     flex-direction: column;
   }
 }
+/* ========== Mentor Nav Tabs ========== */
+.mentor-nav-header {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.nav-link {
+  color: #007bff;
+  font-weight: bold;
+  margin: 0 10px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.nav-link:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* ========== Text Link Buttons Inside Form ========== */
+.helper-text {
+  margin-top: 20px;
+  font-size: 15px;
+  text-align: center;
+}
+
+.helper-text p {
+  margin: 6px 0;
+}
+
+.helper-text .link-btn {
+  background: none;
+  border: none;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-size: 15px;
+  transition: color 0.2s ease;
+}
+
+.helper-text .link-btn:hover {
+  color: #0056b3;
+}
+
+/* ========== Vibrant "Back to Home" Button ========== */
+.back-home {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.back-btn {
+  background: linear-gradient(to right, #ee0979, #ff6a00);
+  color: white;
+  font-weight: bold;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.back-btn:hover {
+  background: linear-gradient(to right, #ff6a00, #ee0979);
+  transform: scale(1.05);
+}
+/* ========== Message Styling ========== */
+.api-message, .error-message {
+  text-align: center;
+  margin: 15px auto 0;
+  padding: 12px 20px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  font-weight: 500;
+  font-size: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Success message (API response) */
+.api-message {
+  background-color: #e6ffed;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+/* Error message */
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+/* ====== Students Test Page Header ====== */
+.test-page-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.test-page-header h2 {
+  font-size: 2rem;
+  color: #333;
+  font-weight: 700;
+}
+
+/* ====== Buttons Section for Test Types ====== */
+.test-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+/* ====== Back Button Container ====== */
+.back-btn-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Reuse existing .action-btn and modifiers (primary, secondary, outline) */

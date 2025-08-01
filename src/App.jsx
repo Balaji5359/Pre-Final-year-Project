@@ -40,7 +40,8 @@ const RoadMap = lazy(() => import("./StudentProfileFiles/RoadMap.jsx"));
 const Mentor = lazy(() => import("./MentorProfilefiles/Mentor.jsx"));
 const MentorProfile = lazy(() => import("./MentorProfilefiles/MentorProfile.jsx"));
 const MentorProfileCreate = lazy(() => import("./MentorProfilefiles/MentorProfileCreate.jsx"));
-
+const MentorStudentTests = lazy(() => import("./MentorProfilefiles/Mentor_StudentTests.jsx"));
+const MentorJAMTestDashboard = lazy(() => import("./MentorProfilefiles/MentorJAMTestDashboard.jsx"));
 // const GenAI_Interviewer_Res = lazy(() => import("./GenAI_Folders/GenAI_Interviewer_Res.jsx"));
 // const PollyPlayer = lazy(() => import("./GenAI_Folders/PollyPlayer.jsx"));
 // Field selection components
@@ -187,6 +188,18 @@ function App() {
               <MentorProfileCreate/>
             </AuthLayout>
           }/>
+
+          <Route path="/mentor_student_tests" element={
+            <AuthLayout>
+              <MentorStudentTests />
+            </AuthLayout>
+          } />
+          <Route path="/mentor_student_tests_jam" element={
+            <AuthLayout>
+              <MentorJAMTestDashboard />
+            </AuthLayout>
+          } />
+
 
           {/* Protected routes */}
           <Route path="/profilecreation" element={
