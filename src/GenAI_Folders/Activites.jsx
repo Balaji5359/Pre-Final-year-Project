@@ -5,13 +5,19 @@ import "./activities.css";
 function Activities() {
     const navigate = useNavigate();
 
-    // Function to handle Start JAM Test button
+    // Navigation handlers
     const handleStartJamTest = () => {
-        // Add any logic you want before navigation here
         navigate("/jam-test-data");
     };
+    const handleStartPronunciationTestS = () => {
+        navigate("/pronunciation-test-s-data");
+    };
+    const handleStartPronunciationTestL = () => {
+        navigate("/pronunciation-test-l-data");
+    };
 
-    const ActivityButton = ({ path, title, icon, startButton }) => {
+    // Updated ActivityButton to accept onStart prop
+    const ActivityButton = ({ path, title, icon, startButton, onStart }) => {
         return (
             <div className="relative group w-full p-6 rounded-xl border-2 transition-all duration-300 bg-white border-blue-200 hover:border-blue-400 hover:shadow-lg">
                 <div className="flex items-center justify-between">
@@ -30,7 +36,7 @@ function Activities() {
                     </div>
                     {startButton && (
                         <button
-                            onClick={handleStartJamTest}
+                            onClick={onStart}
                             className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-black font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-green-700 hover:shadow-xl transform hover:scale-105 transition-all duration-300 border-2 border-green-400"
                         >
                             {startButton}
@@ -64,17 +70,21 @@ function Activities() {
                         title="JAM Test with GenAI Agent"
                         icon="🎤"
                         startButton="Start JAM Test"
+                        onStart={handleStartJamTest}
                     />
-
                     <ActivityButton
                         path="/activities"
                         title="Pronunciation Test - Spoken with GenAI Agent"
                         icon="🗣️"
+                        startButton="Start Pronunciation Test - Spoken"
+                        onStart={handleStartPronunciationTestS}
                     />
                     <ActivityButton
                         path="/activities"
                         title="Pronunciation Test - Listening with GenAI Agent"
                         icon="👂"
+                        startButton="Start Pronunciation Test - Listening"
+                        onStart={handleStartPronunciationTestL}
                     />
                 </div>
 
@@ -100,7 +110,6 @@ function Activities() {
                     />
                 </div>
                 
-
                 {/* Back Button */}
                 <div className="text-center">
                     <button

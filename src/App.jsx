@@ -52,9 +52,16 @@ const PlacementPrediction1 = lazy(() => import("./FieldSelectionFiles/Placement_
 const PlacementRatingForm = lazy(() => import("./FieldSelectionFiles/PlacementRatingForm.jsx"));
 const GenAIInterviewerRes = lazy(() => import('./GenAI_Folders/GenAI_Interviewer_Res'));
 const GenAI_PronunciationTestSpoken = lazy(() => import('./GenAI_Folders/GenAI_PronunciationTestSpoken.jsx'));
+const GenAI_PronunciationTestListening = lazy(() => import('./GenAI_Folders/GenAI_PronunciationTestListening.jsx'));
 const GenAI_JAM = lazy(() => import('./GenAI_Folders/GenAI_JAM'));
 const JAMTestData = lazy(() => import('./GenAI_Folders/TestDataFolder/JAMTestData.jsx'));
+const PronunciationTestS_Data = lazy(() => import('./GenAI_Folders/TestDataFolder/PronunciationTestS_Data.jsx'));
+const PronunciationTestL_Data = lazy(() => import('./GenAI_Folders/TestDataFolder/PronunciationTestL_Data.jsx'));
+
+// Instructions for tests
 const JAMTestInstructions = lazy(() => import('./GenAI_Folders/TestDataFolder/JAMTestInstructions.jsx'));
+const PronunciationTestS_Instructions = lazy(() => import('./GenAI_Folders/TestDataFolder/PronunciationTestS_Instructions.jsx'));
+const PronunciationTestL_Instructions = lazy(() => import('./GenAI_Folders/TestDataFolder/PronunciationTestL_Instructions.jsx'));
 const GenAI_Guidance = lazy(() => import('./GenAI_Folders/GenAI_Guidence.jsx'));
 const GenAI_Prev_Q_Interviewer = lazy(() => import('./GenAI_Folders/GenAI_Prev_Q_Interviewer.jsx'));
 const GenAI_Personality_Test = lazy(() => import('./GenAI_Folders/GenAI_Personality_Test.jsx'));
@@ -322,6 +329,17 @@ function App() {
               <GenAI_JAM />
             </ProtectedRoute>
           } />
+          <Route path="/genai-pro-spoken" element={
+            <ProtectedRoute>
+              <GenAI_PronunciationTestSpoken />
+            </ProtectedRoute>
+          } />
+          <Route path="/genai-pro-listening" element={
+            <ProtectedRoute>
+              <GenAI_PronunciationTestListening />
+            </ProtectedRoute>
+          } />
+
           <Route path="/jam-test-data" element={
             <ProtectedRoute>
               <DashboardLayout>
@@ -329,10 +347,39 @@ function App() {
               </DashboardLayout>
             </ProtectedRoute>
           } />
+          <Route path="/pronunciation-test-s-data" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <PronunciationTestS_Data />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/pronunciation-test-l-data" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <PronunciationTestL_Data />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+
           <Route path="/jam-test-instructions" element={
             <ProtectedRoute>
               <DashboardLayout>
                 <JAMTestInstructions />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/pronunciation-test-s-instructions" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <PronunciationTestS_Instructions />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/pronunciation-test-l-instructions" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <PronunciationTestL_Instructions />
               </DashboardLayout>
             </ProtectedRoute>
           } />

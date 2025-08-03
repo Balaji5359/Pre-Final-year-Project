@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './JAMTestData.css';
 
-function JAMTestData() {
+function PronunciationTestL_Data() {
     const [sessions, setSessions] = useState([]);
     const [selectedHistory, setSelectedHistory] = useState(null);
     const [selectedAnalytics, setSelectedAnalytics] = useState(null);
@@ -23,7 +23,7 @@ function JAMTestData() {
         setLoading(true);
         const email = localStorage.getItem('email');
         try {
-            const response = await fetch('https://4b5jtqs0eb.execute-api.ap-south-1.amazonaws.com/dev/jam-test-history', {
+            const response = await fetch('#', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
@@ -89,7 +89,7 @@ function JAMTestData() {
     return (
         <div className="jam-dashboard">
             <div className="dashboard-header">
-                <h1>Here is your JAM Test with GenAI Agent Details</h1>
+                <h1>Here is your PronunciationTest-Listening with GenAI Agent Details</h1>
                 <div className="overall-score">
                     <CircularProgress percentage={getAverageScore()} size={150} color="#667eea" />
                     <div className="score-details">
@@ -126,19 +126,19 @@ function JAMTestData() {
                         <h2>🎯 Scheduled Tests</h2>
                         <div className="test-activities">
                             <button 
-                                onClick={() => window.location.href = '/jam-test-instructions'}
+                                onClick={() => window.location.href = '/pronunciation-test-l-instructions'}
                                 className="test-activity-btn"
                             >
-                                🎤 JAM Session Test - Click here to take test
+                                🎤 Pronunciation Test Listening - Click here to take test
                             </button>
                             <button 
-                                onClick={() => window.location.href = '/jam-test-data'}
+                                onClick={() => window.location.href = '/pronunciation-test-l-data'}
                                 className="test-activity-btn communication"
                             >
                                 💬 Communication Skills Test - Click here to take test
                             </button>
                             <button 
-                                onClick={() => window.location.href = '/jam-test-data'}
+                                onClick={() => window.location.href = '/pronunciation-test-l-data'}
                                 className="test-activity-btn interview"
                             >
                                 👔 Mock Interview Test - Click here to take test
@@ -345,4 +345,4 @@ function extractFeedback(conversationHistory) {
     return null
 }
 
-export default JAMTestData;
+export default PronunciationTestL_Data;

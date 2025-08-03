@@ -5,7 +5,7 @@ import axios from 'axios';
 // import { speakWithPolly, stopSpeech } from './PollyPlayer.jsx'; // Disabled due to credential issues
 import MicrophoneRecorder from './MicrophoneRecorder.jsx';
 
-function GenAI_PronunciationTestSpoken() {
+function GenAI_PronunciationTestListening() {
         const [chat, setChat] = useState([]);
         const [message, setMessage] = useState('');
         const [isMuted, setIsMuted] = useState(false);
@@ -445,7 +445,7 @@ function GenAI_PronunciationTestSpoken() {
                                     fontWeight: 'bold',
                                     color: '#1f2937',
                                     margin: 0
-                                }}>PronunciationTest-Spoken Session Guide</h3>
+                                }}>PronunciationTest-Listening Session Guide</h3>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                 <div style={{
@@ -602,7 +602,7 @@ function GenAI_PronunciationTestSpoken() {
                                                 background: 'linear-gradient(135deg, #ffffff 0%, #dbeafe 100%)',
                                                 WebkitBackgroundClip: 'text',
                                                 WebkitTextFillColor: 'transparent'
-                                            }}>GenAI PronunciationTest-Spoken Agent</h2>
+                                            }}>GenAI PronunciationTest-Listening Agent</h2>
                                             <p style={{
                                                 color: '#dbeafe',
                                                 fontSize: '14px',
@@ -714,7 +714,7 @@ function GenAI_PronunciationTestSpoken() {
                                             fontWeight: 'bold',
                                             color: '#1f2937',
                                             marginBottom: '8px'
-                                        }}>Welcome to Pronunciation-Spoken Session!</h3>
+                                        }}>Welcome to Pronunciation-Listening Session!</h3>
                                         <p style={{
                                             fontSize: '15px',
                                             color: '#4b5563',
@@ -1004,4 +1004,4 @@ function GenAI_PronunciationTestSpoken() {
     );
 }
 
-export default GenAI_PronunciationTestSpoken;
+export default GenAI_PronunciationTestListening;
