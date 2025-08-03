@@ -18,7 +18,7 @@ const MentorJAMTestDashboard = () => {
         const fetchData = async () => {
             try {
                 const res = await fetch(
-                    'https://hr6jftef76.execute-api.ap-south-1.amazonaws.com/dev/get_students_jam_analysis',
+                    'https://v6iq49ttb1.execute-api.ap-south-1.amazonaws.com/dev/get_students_jam_analysis',
                     {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
