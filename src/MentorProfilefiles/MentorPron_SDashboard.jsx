@@ -18,7 +18,7 @@ const MentorJAMTestDashboard = () => {
         const fetchData = async () => {
             try {
                 const res = await fetch(
-                    'https://v6iq49ttb1.execute-api.ap-south-1.amazonaws.com/dev/get_students_jam_analysis',
+                    'https://v6iq49ttb1.execute-api.ap-south-1.amazonaws.com/dev/get-pron-spoken-analysis',
                     {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -68,8 +68,8 @@ const MentorJAMTestDashboard = () => {
     const extractRating = (session) => {
         const convo = session.conversation || [];
         for (let exchange of convo) {
-            const ratingMatch = exchange.agent?.match(/Overall Rating:\*\* (\d+)/);
-            if (ratingMatch) return parseInt(ratingMatch[1], 10);
+            const scoreMatch = exchange.agent?.match(/Pronunciation Score:\s*(\d+(?:\.\d+)?)\/10/);
+            if (scoreMatch) return parseFloat(scoreMatch[1]);
         }
         return null;
     };
@@ -128,8 +128,8 @@ const MentorJAMTestDashboard = () => {
             {/* Header */}
             <div className="dashboard-header">
                 <div>
-                    <h1>🎯 Mentor JAM Test Dashboard</h1>
-                    <p>Monitor student performance and track progress</p><br></br>
+                    <h1>🎤 Mentor Pronunciation Test-Spoken Dashboard</h1>
+                    <p>Monitor student pronunciation performance and track progress</p><br></br>
                     {/* Back button to /mentor_student_tests*/}
                     <button onClick={() => window.location.href = '/mentor_student_tests'} className="back-button">
                         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -279,7 +279,7 @@ const MentorJAMTestDashboard = () => {
 
                     <div className="history-container">
                         <div className="history-header">
-                            <h2>📚 {selectedStudent?.name} - Session History</h2>
+                            <h2>📚 {selectedStudent?.name} - Pronunciation Session History</h2>
                             <p>{selectedStudent?.rollNo} • {selectedStudent?.totalTests} sessions</p>
                         </div>
 
@@ -327,7 +327,7 @@ const MentorJAMTestDashboard = () => {
                             <div className="conversation-display">
                                 {selectedSession ? (
                                     <div>
-                                        <h3>💬 Conversation Details</h3>
+                                        <h3>🎤 Pronunciation Test Details</h3>
                                         <div className="conversation-content">
                                             {selectedSession.conversation?.map((exchange, idx) => (
                                                 <div key={idx} className="message-pair">
@@ -339,7 +339,7 @@ const MentorJAMTestDashboard = () => {
                                                     </div>
                                                     <div className="agent-message">
                                                         <div className="message-label">
-                                                            <span>🤖</span>JAM Agent:
+                                                            <span>🎤</span>Pronunciation Agent:
                                                         </div>
                                                         <div className="message-content">{exchange.agent}</div>
                                                     </div>

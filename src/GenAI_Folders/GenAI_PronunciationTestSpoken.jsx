@@ -15,7 +15,7 @@ function GenAI_PronunciationTestSpoken() {
         const chatRef = useRef(null);
         const [isRecording, setIsRecording] = useState(false);
         const [mediaRecorder, setMediaRecorder] = useState(null);
-        const [sessionId] = useState('jam-session-' + Math.random().toString(36).substring(2, 15));
+        const [sessionId] = useState('pronunciation-spoken-' + Math.random().toString(36).substring(2, 15));
         const [timer, setTimer] = useState(0);
         const [timerInterval, setTimerInterval] = useState(null);
         const [accumulatedText, setAccumulatedText] = useState('');
@@ -23,7 +23,7 @@ function GenAI_PronunciationTestSpoken() {
         const accumulatedTextRef = useRef('');
         const mediaRecorderRef = useRef(null);
         const isRecordingRef = useRef(false);
-        const [testTimer, setTestTimer] = useState(150); // 2 minutes 30 seconds = 150 seconds
+        const [testTimer, setTestTimer] = useState(120); // 2 minutes = 120 seconds
         const [testTimerInterval, setTestTimerInterval] = useState(null);
         const [showCompletionMessage, setShowCompletionMessage] = useState(false);
         const navigate = useNavigate();
@@ -57,9 +57,9 @@ function GenAI_PronunciationTestSpoken() {
             const interval = setInterval(() => {
                 setTimer(prev => {
                     const newTime = prev + 1;
-                    if (newTime >= 60 && !isSubmitting) {
-                        // Auto-submit at exactly 60 seconds
-                        console.log('Timer reached 60 seconds, auto-submitting...');
+                    if (newTime >= 10 && !isSubmitting) {
+                        // Auto-submit at exactly 10 seconds
+                        console.log('Timer reached 10 seconds, auto-submitting...');
                         
                         setIsSubmitting(true);
                         
@@ -85,7 +85,7 @@ function GenAI_PronunciationTestSpoken() {
                             }
                         }, 100);
                         
-                        return 60;
+                        return 10;
                     }
                     return newTime;
                 });
@@ -114,7 +114,7 @@ function GenAI_PronunciationTestSpoken() {
     
             try {
                 const res = await axios.post(
-                    '#',
+                    'https://c9beky98gk.execute-api.ap-south-1.amazonaws.com/dev/activity-pronounce-spoken',
                     // send message like this
                     {
                         "body": JSON.stringify
@@ -145,14 +145,7 @@ function GenAI_PronunciationTestSpoken() {
                 const botMessage = { sender: 'bot', text: aiResponse };
                 setChat((prev) => [...prev, botMessage]);
     
-                if (!isMuted && aiResponse && typeof aiResponse === 'string') {
-                    // Use browser's built-in speech synthesis instead of Polly
-                    if ('speechSynthesis' in window) {
-                        const utterance = new SpeechSynthesisUtterance(aiResponse.replace(/<[^>]*>/g, '').replace(/\*\*/g, ''));
-                        utterance.rate = 0.8;
-                        speechSynthesis.speak(utterance);
-                    }
-                }
+                // Text-to-speech removed as requested
     
             } catch (err) {
                 console.error('Full API error:', err);
@@ -462,7 +455,7 @@ function GenAI_PronunciationTestSpoken() {
                                         color: '#374151',
                                         fontWeight: '500',
                                         margin: 0
-                                    }}>💬 Start with greeting: <span style={{ fontWeight: 'bold', color: '#2563eb' }}>"hi"</span>, mute mike if no need 🔇</p>
+                                    }}>💬 Start with greeting: <span style={{ fontWeight: 'bold', color: '#2563eb' }}>"hi"</span></p>
                                 </div>
                                 <div style={{
                                     padding: '16px',
@@ -494,7 +487,7 @@ function GenAI_PronunciationTestSpoken() {
                                         color: '#374151',
                                         fontWeight: '500',
                                         margin: 0
-                                    }}>🎯 Choose <span style={{ fontWeight: 'bold', color: '#2563eb' }}>1 topic</span> Agent will provide 2 topics and speak for <span style={{ fontWeight: 'bold', color: '#2563eb' }}>1 minute</span></p>
+                                    }}>🎯 Agent will provide <span style={{ fontWeight: 'bold', color: '#2563eb' }}>5 sentences</span> to read and pronounce correctly</p>
                                 </div>
                                 <div style={{
                                     padding: '16px',
@@ -510,8 +503,7 @@ function GenAI_PronunciationTestSpoken() {
                                         color: '#374151',
                                         fontWeight: '500',
                                         margin: 0
-                                    }}>🎤 Remember the rules, when you click <span style={{ fontWeight: 'bold', color: '#2563eb' }}>Record </span>
-                                        it will <span style={{ fontWeight: 'bold', color: 'red' }}>start recording voice</span>, when <span style={{ fontWeight: 'bold', color: '#2563eb' }}>clicked </span>again <span style={{ fontWeight: 'bold', color: 'red' }}>stop recording</span></p>
+                                    }}>🎤 Click <span style={{ fontWeight: 'bold', color: '#2563eb' }}>Record</span> to start <span style={{ fontWeight: 'bold', color: 'red' }}>10-second recording</span> for each sentence</p>
                                 </div>
                                 <div style={{
                                     padding: '16px',
@@ -527,8 +519,7 @@ function GenAI_PronunciationTestSpoken() {
                                         color: '#374151',
                                         fontWeight: '500',
                                         margin: 0
-                                    }}>💭 Take time for <span style={{ fontWeight: 'bold', color: '#2563eb' }}>30 sec </span>to think before starting,
-                                        you can also use <span style={{ fontWeight: 'bold', color: '#2563eb' }}>1 minute</span> to record your voice
+                                    }}>💭 Read each sentence carefully and pronounce clearly within <span style={{ fontWeight: 'bold', color: '#2563eb' }}>10 seconds</span>
                                     </p>
                                 </div>
                                 <div style={{
@@ -545,8 +536,7 @@ function GenAI_PronunciationTestSpoken() {
                                         color: '#374151',
                                         fontWeight: '500',
                                         margin: 0
-                                    }}>📊 After <span style={{ fontWeight: 'bold', color: '#2563eb' }}>1 minute </span>
-                                        the content will be auto submitted and you will get <span style={{ fontWeight: 'bold', color: '#2563eb' }}>Agent feedback</span></p>
+                                    }}>📊 After <span style={{ fontWeight: 'bold', color: '#2563eb' }}>10 seconds</span> recording will auto-submit and you'll get <span style={{ fontWeight: 'bold', color: '#2563eb' }}>pronunciation feedback</span></p>
                                 </div>
                             </div>
                         </div>
@@ -632,51 +622,7 @@ function GenAI_PronunciationTestSpoken() {
                                         >
                                             ← Back
                                         </button>
-                                        <button
-                                            style={{
-                                                background: 'rgba(255, 255, 255, 0.2)',
-                                                color: 'white',
-                                                border: 'none',
-                                                padding: '10px 16px',
-                                                borderRadius: '12px',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.3s ease',
-                                                backdropFilter: 'blur(10px)',
-                                                fontSize: '16px'
-                                            }}
-                                            onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
-                                            onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
-                                            onClick={() => {
-                                                setIsMuted(!isMuted);
-                                                if (!isMuted && 'speechSynthesis' in window) {
-                                                    speechSynthesis.cancel();
-                                                }
-                                            } }
-                                        >
-                                            {isMuted ? '🔇' : '🔊'}
-                                        </button>
-                                        <button
-                                            style={{
-                                                background: 'rgba(255, 255, 255, 0.2)',
-                                                color: 'white',
-                                                border: 'none',
-                                                padding: '10px 16px',
-                                                borderRadius: '12px',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.3s ease',
-                                                backdropFilter: 'blur(10px)',
-                                                fontSize: '16px'
-                                            }}
-                                            onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
-                                            onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
-                                            onClick={() => {
-                                                if ('speechSynthesis' in window) {
-                                                    speechSynthesis.cancel();
-                                                }
-                                            } }
-                                        >
-                                            ⏹️
-                                        </button>
+
                                     </div>
                                 </div>
                             </div>
@@ -776,10 +722,10 @@ function GenAI_PronunciationTestSpoken() {
                                             fontSize: '18px',
                                             fontWeight: 'bold',
                                             marginBottom: '8px',
-                                            color: timer > 50 ? '#dc2626' : '#16a34a',
-                                            animation: timer > 50 ? 'pulse 1s infinite' : 'none'
+                                            color: timer > 8 ? '#dc2626' : '#16a34a',
+                                            animation: timer > 8 ? 'pulse 1s infinite' : 'none'
                                         }}>
-                                            🎙️ Recording: {timer}s / 60s
+                                            🎙️ Recording: {timer}s / 10s
                                         </div>
                                         <div style={{
                                             width: '100%',
@@ -792,10 +738,10 @@ function GenAI_PronunciationTestSpoken() {
                                                 height: '8px',
                                                 borderRadius: '9999px',
                                                 transition: 'all 1s ease',
-                                                background: timer > 50
+                                                background: timer > 8
                                                     ? 'linear-gradient(135deg, #f87171 0%, #dc2626 100%)'
                                                     : 'linear-gradient(135deg, #4ade80 0%, #16a34a 100%)',
-                                                width: `${(timer / 60) * 100}%`
+                                                width: `${(timer / 10) * 100}%`
                                             }}></div>
                                         </div>
                                     </div>
@@ -805,19 +751,19 @@ function GenAI_PronunciationTestSpoken() {
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
                                         onKeyDown={handleKeyDown}
-                                        placeholder='Type "hi" to start your JAM session...'
+                                        placeholder='Type "hi" to start your pronunciation spoken test...'
                                         disabled={isLoading}
-                                        rows={4}
+                                        rows={2}
                                         style={{
                                             width: '100%',
-                                            padding: '24px',
+                                            padding: '16px',
                                             border: '1px solid #d1d5db',
-                                            borderRadius: '16px',
+                                            borderRadius: '12px',
                                             resize: 'none',
                                             outline: 'none',
                                             transition: 'all 0.3s ease',
                                             background: 'rgba(249, 250, 251, 0.5)',
-                                            fontSize: '18px',
+                                            fontSize: '16px',
                                             fontFamily: 'inherit',
                                             color: '#1f2937'
                                         }}
@@ -941,7 +887,7 @@ function GenAI_PronunciationTestSpoken() {
                                 marginBottom: '20px',
                                 textShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
                                 lineHeight: '1.2'
-                            }}>Your JAM Session Completed Successfully!</h2>
+                            }}>Your Pronunciation Test-Spoken Completed Successfully!</h2>
                             <p style={{
                                 fontSize: '24px',
                                 color: 'rgba(255, 255, 255, 0.9)',

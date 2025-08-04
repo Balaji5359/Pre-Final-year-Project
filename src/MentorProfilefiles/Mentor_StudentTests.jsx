@@ -17,7 +17,7 @@ function MentorStudentTests() {
             title: "Spoken Test Data",
             description: "Analyze student speaking skills and pronunciation",
             icon: "🗣️",
-            route: "/mentor_student_tests",
+            route: "/mentor_student_tests_pron_s",
             color: "from-blue-500 to-cyan-600",
             hoverColor: "hover:from-blue-600 hover:to-cyan-700"
         },

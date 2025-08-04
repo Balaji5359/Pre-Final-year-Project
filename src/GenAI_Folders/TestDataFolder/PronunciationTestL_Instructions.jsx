@@ -71,7 +71,7 @@ function JAMTestInstructions() {
                                     </div>
                                     <div className="step">
                                         <span className="step-number">3</span>
-                                        <span className="step-text">Next type <code>"1 or 2"</code> - to select the topic of your choice</span>
+                                        <span className="step-text">Then agent will give <code>5 sentences to read and speak out one by one</code>, and get feedback on your pronunciation.</span>
                                     </div>
                                 </div>
                             </div>

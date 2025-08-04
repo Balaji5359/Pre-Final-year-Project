@@ -23,7 +23,7 @@ function PronunciationTestS_Data() {
         setLoading(true);
         const email = localStorage.getItem('email');
         try {
-            const response = await fetch('#', {
+            const response = await fetch('https://4b5jtqs0eb.execute-api.ap-south-1.amazonaws.com/dev/pron-spoken-history', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
@@ -37,13 +37,29 @@ function PronunciationTestS_Data() {
         setLoading(false);
     };
 
-    const getAverageScore = () => {
-        const scores = sessions.map(session => {
-            const feedback = extractFeedback(session.conversationHistory);
-            return feedback ? parseInt(feedback.score.split('/')[0]) : 0;
-        }).filter(score => score > 0);
+    const extractScore = (conversationHistory) => {
+        if (!Array.isArray(conversationHistory)) return 0;
         
+        for (const item of conversationHistory) {
+            if (item.agent && item.agent.includes('Pronunciation Score:')) {
+                const scoreMatch = item.agent.match(/Pronunciation Score:\s*(\d+(?:\.\d+)?)\/10/);
+                return scoreMatch ? parseFloat(scoreMatch[1]) : 0;
+            }
+        }
+        return 0;
+    };
+
+    const getAverageScore = () => {
+        const scores = sessions.map(session => extractScore(session.conversationHistory)).filter(score => score > 0);
         return scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+    };
+
+    const getScoreCategory = (score) => {
+        if (score >= 9) return { text: 'Perfect Performance', color: '#4CAF50' };
+        if (score >= 8) return { text: 'Good Performance', color: '#2196F3' };
+        if (score >= 7) return { text: 'Average Performance', color: '#FF9800' };
+        if (score >= 6) return { text: 'Poor Performance', color: '#F44336' };
+        return { text: 'No Score Available', color: '#9E9E9E' };
     };
 
     const CircularProgress = ({ percentage, size = 120, strokeWidth = 8, color = '#4CAF50' }) => {
@@ -91,10 +107,12 @@ function PronunciationTestS_Data() {
             <div className="dashboard-header">
                 <h1>Here is your PronunciationTest-Spoken <br></br>with GenAI Agent Details</h1>
                 <div className="overall-score">
-                    <CircularProgress percentage={getAverageScore()} size={150} color="#667eea" />
+                    <CircularProgress percentage={getAverageScore()} size={150} color={getScoreCategory(getAverageScore()).color} />
                     <div className="score-details">
                         <h2>Average Score</h2>
-                        <p>Keep practicing!</p>
+                        <p style={{ color: getScoreCategory(getAverageScore()).color, fontWeight: 'bold' }}>
+                            {getScoreCategory(getAverageScore()).text}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -166,9 +184,9 @@ function PronunciationTestS_Data() {
                                                 onClick={() => setSelectedHistory(selectedHistory?.sessionId === session.sessionId ? null : session)}
                                             >
                                                 <div className="session-info">
-                                                    <span className="session-time">Session Time: {session.time ? new Date(session.time).toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'}) : 'N/A'}</span>
+                                                    <span className="session-time" style={{ color: 'white' }}>Session Time: {session.time ? new Date(session.time).toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'}) : 'N/A'}</span>
                                                     <br />
-                                                    <span className="session-id">JAMSessionId: {session.sessionId}</span>
+                                                    <span className="session-id" style={{ color: 'white' }}>PronunciationSessionId: {session.sessionId}</span>
                                                 </div>
                                             </button>
                                         ))}
@@ -189,7 +207,7 @@ function PronunciationTestS_Data() {
                                                                 <div className="message-content">{item.user}</div>
                                                             </div>
                                                             <div className="agent-message">
-                                                                <span className="message-label">JAM Agent:</span>
+                                                                <span className="message-label">Pronunciation Agent:</span>
                                                                 <div className="message-content">{item.agent}</div>
                                                             </div>
                                                         </div>
@@ -203,7 +221,7 @@ function PronunciationTestS_Data() {
                                                                 <div className="message-content">{user}</div>
                                                             </div>
                                                             <div className="agent-message">
-                                                                <span className="message-label">JAM Agent:</span>
+                                                                <span className="message-label">Pronunciation Agent:</span>
                                                                 <div className="message-content">{agent}</div>
                                                             </div>
                                                         </div>
@@ -249,9 +267,9 @@ function PronunciationTestS_Data() {
                                                     onClick={() => setSelectedAnalytics(selectedAnalytics?.sessionId === session.sessionId ? null : {...session, feedback})}
                                                 >
                                                     <div className="session-info">
-                                                        <span className="session-time">Session Time: {session.time ? new Date(session.time).toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'}) : 'N/A'}</span>
+                                                        <span className="session-time" style={{ color: 'white' }}>Session Time: {session.time ? new Date(session.time).toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'}) : 'N/A'}</span>
                                                         <br />
-                                                        <span className="session-id">JAMSessionId: {session.sessionId}</span>
+                                                        <span className="session-id" style={{ color: 'white' }}>PronunciationSessionId: {session.sessionId}</span>
                                                         <span className="score-badge">Score: {feedback.score}</span>
                                                     </div>
                                                 </button>
@@ -311,38 +329,29 @@ function PronunciationTestS_Data() {
 }
 
 function extractFeedback(conversationHistory) {
-    if (Array.isArray(conversationHistory)) {
-        // Handle array format
-        for (const item of conversationHistory) {
-            if (item.user && item.agent && item.user.length > 10 && item.agent.includes('Overall Rating:')) {
-                const scoreMatch = item.agent.match(/Overall Rating:\*\*\s*(\d+\/10)/)
-                const feedbackLines = item.agent.split('\\n').filter(line => line.includes('**') && line.includes(':'))
-                const tipMatch = item.agent.match(/Tip:\*\*\s*(.+?)(?:\\n|$)/)
-                
-                return {
-                    score: scoreMatch ? scoreMatch[1] : 'N/A',
-                    details: feedbackLines.map(line => line.replace(/\*\*/g, '').trim()),
-                    tip: tipMatch ? tipMatch[1] : null
-                }
+    if (!Array.isArray(conversationHistory)) return null;
+    
+    for (const item of conversationHistory) {
+        if (item.agent && item.agent.includes('Pronunciation Score:')) {
+            const scoreMatch = item.agent.match(/Pronunciation Score:\s*(\d+(?:\.\d+)?)\/10/);
+            const fluencyMatch = item.agent.match(/Fluency Assessment:\s*([^\n]+)/);
+            const overallMatch = item.agent.match(/Overall Performance:\s*([^\n]+(?:\n[^\n]+)*)/);
+            
+            const feedbackLines = [];
+            if (fluencyMatch) feedbackLines.push(`Fluency: ${fluencyMatch[1]}`);
+            if (overallMatch) {
+                const overallText = overallMatch[1].replace(/\n/g, ' ').trim();
+                feedbackLines.push(`Performance: ${overallText}`);
             }
-        }
-    } else {
-        // Handle object format
-        for (const [user, agent] of Object.entries(conversationHistory)) {
-            if (user.length > 10 && agent.includes('Overall Rating:')) {
-                const scoreMatch = agent.match(/Overall Rating:\*\*\s*(\d+\/10)/)
-                const feedbackLines = agent.split('\\n').filter(line => line.includes('**') && line.includes(':'))
-                const tipMatch = agent.match(/Tip:\*\*\s*(.+?)(?:\\n|$)/)
-                
-                return {
-                    score: scoreMatch ? scoreMatch[1] : 'N/A',
-                    details: feedbackLines.map(line => line.replace(/\*\*/g, '').trim()),
-                    tip: tipMatch ? tipMatch[1] : null
-                }
-            }
+            
+            return {
+                score: scoreMatch ? `${scoreMatch[1]}/10` : 'N/A',
+                details: feedbackLines,
+                tip: 'Keep practicing pronunciation and focus on sentence completion'
+            };
         }
     }
-    return null
+    return null;
 }
 
 export default PronunciationTestS_Data;

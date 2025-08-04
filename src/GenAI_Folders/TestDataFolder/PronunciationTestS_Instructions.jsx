@@ -33,7 +33,7 @@ function JAMTestInstructions() {
                     <h1 className="main-title">🎤 Instructions to Start PronunciationTest-Spoken with GenAI Agent</h1>
                     <div className="time-badge">
                         <span className="time-icon">⏱️</span>
-                        Total Time: 2 minutes 30 seconds (2½ minutes)
+                        Total Time: 2 minutes
                     </div>
                 </div>
 
@@ -71,34 +71,27 @@ function JAMTestInstructions() {
                                     </div>
                                     <div className="step">
                                         <span className="step-number">3</span>
-                                        <span className="step-text">Next type <code>"1 or 2"</code> - to select the topic of your choice</span>
+                                        <span className="step-text">Then agent will start giving <code>5 sentences to read one by one</code></span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                         <div className="timeline-item">
-                            <div className="timeline-badge">30s</div>
+                            <div className="timeline-badge">60s</div>
                             <div className="timeline-content">
-                                <h4>💭 Think Time</h4>
-                                <p>30 seconds to think about the topic you have selected</p>
+                                <h4>📊 Speaking Time</h4>
+                                <p><div className="step">
+                                        <span className="step-text">Then agent will give <code>5 sentences to read and speak out one by one</code>10 sec for each sentence, and get feedback on your pronunciation.</span>
+                                    </div></p>
                             </div>
                         </div>
+                    </div>
 
-                        <div className="timeline-item">
-                            <div className="timeline-badge">1m</div>
-                            <div className="timeline-content">
-                                <h4>🗣️ Speaking Time</h4>
-                                <p>1 minute to start speaking about the topic</p>
-                            </div>
-                        </div>
-
-                        <div className="timeline-item">
-                            <div className="timeline-badge">15s</div>
-                            <div className="timeline-content">
-                                <h4>📊 Feedback</h4>
-                                <p>15 seconds to receive feedback of your test</p>
-                            </div>
+                    <div className="timeline-item">
+                        <div className="timeline-badge">15s</div>
+                        <div className="timeline-content">
+                            <h4>Feedback to read</h4>
+                            <p>15 seconds to read the feedback provided by the agent</p>
                         </div>
                     </div>
 
@@ -116,10 +109,6 @@ function JAMTestInstructions() {
                             <div className="tip-card">
                                 <span className="tip-icon">🔊</span>
                                 <p>Speak confidently and loudly</p>
-                            </div>
-                            <div className="tip-card">
-                                <span className="tip-icon">📝</span>
-                                <p>Structure your thoughts well</p>
                             </div>
                         </div>
                     </div>
